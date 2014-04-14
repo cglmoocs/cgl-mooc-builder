@@ -47,6 +47,8 @@ from unit_lesson_editor import LinkRESTHandler
 from unit_lesson_editor import UnitLessonEditor
 from unit_lesson_editor import UnitLessonTitleRESTHandler
 from unit_lesson_editor import UnitRESTHandler
+# CGL-MOOC-Builder: import sectionRESTHandler to handle section
+from unit_lesson_editor import SectionRESTHandler
 
 import appengine_config
 from common import jinja_utils
@@ -65,6 +67,9 @@ from modules.dashboard import analytics
 from modules.search.search import SearchDashboardHandler
 from tools import verify
 
+# CGL-MOOC-Builder: import groupby to groupby section id
+from itertools import groupby
+
 from google.appengine.api import users
 
 
@@ -81,14 +86,14 @@ class DashboardHandler(
         'edit_unit', 'edit_link', 'edit_lesson', 'edit_assessment',
         'add_asset', 'delete_asset', 'manage_text_asset', 'import_course',
         'edit_assignment', 'add_mc_question', 'add_sa_question',
-        'edit_question', 'add_question_group', 'edit_question_group']
+        'edit_question', 'add_question_group', 'edit_question_group', 'edit_section']
     # Requests to these handlers automatically go through an XSRF token check
     # that is implemented in ReflectiveRequestHandler.
     post_actions = [
         'compute_student_stats', 'create_or_edit_settings', 'add_unit',
         'add_link', 'add_assessment', 'add_lesson', 'index_course',
         'clear_index', 'edit_basic_course_settings', 'add_reviewer',
-        'delete_reviewer']
+        'delete_reviewer', 'add_section']
     nav_mappings = [
         ('', 'Outline'),
         ('assets', 'Assets'),
@@ -109,6 +114,7 @@ class DashboardHandler(
             (LinkRESTHandler.URI, LinkRESTHandler),
             (UnitLessonTitleRESTHandler.URI, UnitLessonTitleRESTHandler),
             (UnitRESTHandler.URI, UnitRESTHandler),
+            (SectionRESTHandler.URI, SectionRESTHandler),
             (McQuestionRESTHandler.URI, McQuestionRESTHandler),
             (SaQuestionRESTHandler.URI, SaQuestionRESTHandler),
             (TextAssetRESTHandler.URI, TextAssetRESTHandler),
@@ -260,81 +266,112 @@ class DashboardHandler(
             )
 
     def render_course_outline_to_html(self):
-        """Renders course outline to HTML."""
+        """CGL-MOOC-Builder: The original function was modified to cooperate
+        with Section -> Units -> Lessons course structure.
+        Renders course outline to HTML."""
         course = courses.Course(self)
         if not course.get_units():
             return []
 
         is_editable = filer.is_editable_fs(self.app_context)
 
-        lines = safe_dom.Element('ul', style='list-style: none;')
-        for unit in course.get_units():
-            if unit.type == verify.UNIT_TYPE_ASSESSMENT:
-                li = safe_dom.Element('li').add_child(
-                    safe_dom.Element(
-                        'a', href='assessment?name=%s' % unit.unit_id,
-                        className='strong'
-                    ).add_text(unit.title)
-                ).add_child(self._get_availability(unit))
-                if is_editable:
-                    url = self.canonicalize_url(
-                        '/dashboard?%s') % urllib.urlencode({
-                            'action': 'edit_assessment',
-                            'key': unit.unit_id})
-                    li.add_child(self._get_edit_link(url))
-                lines.add_child(li)
-                continue
-
-            if unit.type == verify.UNIT_TYPE_LINK:
-                li = safe_dom.Element('li').add_child(
-                    safe_dom.Element(
-                        'a', href=unit.href, className='strong'
-                    ).add_text(unit.title)
-                ).add_child(self._get_availability(unit))
-                if is_editable:
-                    url = self.canonicalize_url(
-                        '/dashboard?%s') % urllib.urlencode({
-                            'action': 'edit_link',
-                            'key': unit.unit_id})
-                    li.add_child(self._get_edit_link(url))
-                lines.add_child(li)
-                continue
-
-            if unit.type == verify.UNIT_TYPE_UNIT:
-                li = safe_dom.Element('li').add_child(
-                    safe_dom.Element(
-                        'a', href='unit?unit=%s' % unit.unit_id,
-                        className='strong').add_text(
-                            'Unit %s - %s' % (unit.index, unit.title))
-                ).add_child(self._get_availability(unit))
-                if is_editable:
-                    url = self.canonicalize_url(
-                        '/dashboard?%s') % urllib.urlencode({
-                            'action': 'edit_unit',
-                            'key': unit.unit_id})
-                    li.add_child(self._get_edit_link(url))
-
-                ol = safe_dom.Element('ol')
-                for lesson in course.get_lessons(unit.unit_id):
-                    li2 = safe_dom.Element('li').add_child(
+        # CGL-MOOC-Builder: Sort and group all units by section_id
+        unitObj = course.get_units()
+        sortedUnits = sorted(unitObj, key = lambda x: int(x.section_id or 0))
+        groups = []
+        keys = []
+        for k, g in groupby(sortedUnits, key = lambda x: int(x.section_id or 0)):
+            groups.append(list(g))
+            keys.append(k)
+        # CGL-MOOC-Builder: Loop through Section, Units and Lessons
+        outline = safe_dom.Element('ul', style='list-style: none;')
+        for s in groups:
+            lines = safe_dom.Element('ul', style='list-style: none;')
+            for unit in s:
+                if unit.type == verify.UNIT_TYPE_ASSESSMENT:
+                    li = safe_dom.Element('li').add_child(
                         safe_dom.Element(
-                            'a',
-                            href='unit?unit=%s&lesson=%s' % (
-                                unit.unit_id, lesson.lesson_id),
-                        ).add_text(lesson.title)
-                    ).add_child(self._get_availability(lesson))
+                            'a', href='assessment?name=%s' % unit.unit_id,
+                            className='strong'
+                        ).add_text(unit.title)
+                    ).add_child(self._get_availability(unit))
                     if is_editable:
-                        url = self.get_action_url(
-                            'edit_lesson', key=lesson.lesson_id)
-                        li2.add_child(self._get_edit_link(url))
-                    ol.add_child(li2)
-                li.add_child(ol)
-                lines.add_child(li)
-                continue
+                        url = self.canonicalize_url(
+                            '/dashboard?%s') % urllib.urlencode({
+                                'action': 'edit_assessment',
+                                'key': unit.unit_id})
+                        li.add_child(self._get_edit_link(url))
+                    lines.add_child(li)
+                    continue
 
-            raise Exception('Unknown unit type: %s.' % unit.type)
+                if unit.type == verify.UNIT_TYPE_LINK:
+                    li = safe_dom.Element('li').add_child(
+                        safe_dom.Element(
+                            'a', href=unit.href, className='strong'
+                        ).add_text(unit.title)
+                    ).add_child(self._get_availability(unit))
+                    if is_editable:
+                        url = self.canonicalize_url(
+                            '/dashboard?%s') % urllib.urlencode({
+                                'action': 'edit_link',
+                                'key': unit.unit_id})
+                        li.add_child(self._get_edit_link(url))
+                    lines.add_child(li)
+                    continue
 
-        return lines
+                if unit.type == verify.UNIT_TYPE_UNIT:
+                    li = safe_dom.Element('li').add_child(
+                        safe_dom.Element(
+                            'a', href='unit?unit=%s' % unit.unit_id,
+                            className='strong').add_text(
+                                'Unit %s - %s' % (unit.index, unit.title))
+                    ).add_child(self._get_availability(unit))
+                    if is_editable:
+                        url = self.canonicalize_url(
+                            '/dashboard?%s') % urllib.urlencode({
+                                'action': 'edit_unit',
+                                'key': unit.unit_id})
+                        li.add_child(self._get_edit_link(url))
+
+                    ol = safe_dom.Element('ol')
+                    for lesson in course.get_lessons(unit.unit_id):
+                        li2 = safe_dom.Element('li').add_child(
+                            safe_dom.Element(
+                                'a',
+                                href='unit?unit=%s&lesson=%s' % (
+                                    unit.unit_id, lesson.lesson_id),
+                            ).add_text(lesson.title)
+                        ).add_child(self._get_availability(lesson))
+                        if is_editable:
+                            url = self.get_action_url(
+                                'edit_lesson', key=lesson.lesson_id)
+                            li2.add_child(self._get_edit_link(url))
+                        ol.add_child(li2)
+
+                    li.add_child(ol)
+                    lines.add_child(li)
+                    continue
+
+                raise Exception('Unknown unit type: %s.' % unit.type)
+
+            liSection = safe_dom.Element('li')
+            liSection.add_child(safe_dom.Element(
+                'span')).add_text(
+                        'Section %s - %s' % (
+                            unit.section_id, unit.section_title))
+
+            # CGL-MOOC-Builder: adds a link for edit section content
+            if is_editable:
+                section_edit_url = self.canonicalize_url(
+                    '/dashboard?%s') % urllib.urlencode({
+                        'action': 'edit_section',
+                        'key': unit.unit_id})
+                liSection.add_child(self._get_edit_link(section_edit_url))
+
+            liSection.add_child(lines)
+            outline.add_child(liSection)
+
+        return outline
 
     def get_outline(self):
         """Renders course outline view."""
@@ -375,6 +412,11 @@ class DashboardHandler(
                 'caption': 'Add Assessment',
                 'action': self.get_action_url('add_assessment'),
                 'xsrf_token': self.create_xsrf_token('add_assessment')})
+            outline_actions.append({
+                'id': 'add_section',
+                'caption': 'Add Section',
+                'action': self.get_action_url('add_section'),
+                'xsrf_token': self.create_xsrf_token('add_section')})
             if not courses.Course(self).get_units():
                 outline_actions.append({
                     'id': 'import_course',

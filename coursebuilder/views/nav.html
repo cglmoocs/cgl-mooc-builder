@@ -1,0 +1,14 @@
+<div id="navbar">
+  <ul id="navWrapper">
+    {% for u in units if u.type == 'U' %}
+    <li id="unit{{u.unit_id}}" class="{% if u.unit_id|int == unit.index|int %}unit-nav current-unit{% else %}unit-nav{% endif %}">
+        <a href="/unit?unit={{ u.unit_id }}#navContainer" data-tooltip="{{u.title}}">
+        	<div class="{% if (u.unit_id|int is not divisibleby 5) and (not (loop.first or loop.last)) %}unit-nav-number unit-nav-hide{% else %}unit-nav-number{% endif %}">
+            	{{- u.unit_id -}}
+            </div>
+        </a>
+        </li>
+    {% endfor %}
+  </ul>
+  <!-- Top Nav -->
+</div>

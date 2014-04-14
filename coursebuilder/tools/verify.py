@@ -105,20 +105,59 @@ UNIT_TYPE_NAMES = {
     UNIT_TYPE_LINK: 'Link',
     UNIT_TYPE_ASSESSMENT: 'Assessment'}
 
+# Google Course Builder starts:
+#UNITS_HEADER = (
+#    'id,type,unit_id,title,release_date,now_available')
+# Google Course Builder ends
+
+# CGL-MOOC-Builder starts:
+# Additional data fields for a unit
 UNITS_HEADER = (
-    'id,type,unit_id,title,release_date,now_available')
+    'id,type,unit_id,title,release_date,now_available,coding,resources,files,overview,section_overview,doi,'
+    'total_time,playlist,section_id,section_title,section_img,section_time,cc,google_community')
+# CGL-MOOC-Builder ends
+
 LESSONS_HEADER = (
     'unit_id,unit_title,lesson_id,lesson_title,lesson_activity,'
     'lesson_activity_name,lesson_notes,lesson_video_id,lesson_objectives')
 
+# Google Course Builder starts:
+#UNIT_CSV_TO_DB_CONVERTER = {
+#    'id': None,
+#    'type': ('type', unicode),
+#    'unit_id': ('unit_id', unicode),
+#    'title': ('title', unicode),
+#    'release_date': ('release_date', unicode),
+#    'now_available': ('now_available', lambda value: value == 'True')
+#}
+# Google Course Builder ends
+
+# CGL-MOOC-Builder starts:
+# Additional data fields for a unit
 UNIT_CSV_TO_DB_CONVERTER = {
     'id': None,
     'type': ('type', unicode),
     'unit_id': ('unit_id', unicode),
     'title': ('title', unicode),
     'release_date': ('release_date', unicode),
-    'now_available': ('now_available', lambda value: value == 'True')
+    'now_available': ('now_available', lambda value: value == 'True'),
+    'coding': ('coding', unicode),
+    'resources': ('resources', unicode),
+    'files': ('files', unicode),
+    'overview': ('overview', unicode),
+    'section_overview': ('section_overview', unicode),
+    'doi': ('doi', unicode),
+    'total_time': ('total_time', unicode),
+    'playlist': ('playlist', unicode),
+    'section_id': ('section_id', unicode),
+    'section_title': ('section_title', unicode),
+    'section_img': ('section_img', unicode),
+    'section_time': ('section_time', unicode),
+    'cc': ('cc', unicode),
+    'google_community': ('google_community', unicode)
 }
+# CGL-MOOC-Builder ends
+
 LESSON_CSV_TO_DB_CONVERTER = {
     'unit_id': ('unit_id', int),
 
@@ -653,6 +692,23 @@ class Unit(object):
         self.title = ''
         self.release_date = ''
         self.now_available = False
+        # CGL-MOOC-Builder starts:
+        # Additional data fields for a unit
+        self.coding = ''
+        self.resources = ''    #resources
+        self.files = ''        #files
+        self.overview = ''     #overview
+        self.section_overview = '' #section_overview
+        self.doi = ''          #doi
+        self.total_time = ''   #total_time
+        self.playlist = ''     #playlist
+        self.section_id = ''   #section_id
+        self.section_title = ''#section_title
+        self.section_img = ''  #section_img
+        self.section_time = '' #section_time
+        self.cc = ''           #colsed caption
+        self.google_community = '' #google_community
+        # CGL-MOOC-Builder ends
 
     def list_properties(self, name, output):
         """Outputs all properties of the unit."""
@@ -668,7 +724,37 @@ class Unit(object):
             name, escape_quote(self.release_date)))
         output.append('%s[\'now_available\'] = %s;' % (
             name, str(self.now_available).lower()))
-
+        # CGL-MOOC-Builder starts:
+        # Additional data fields for a unit
+        output.append('%s[\'coding\'] = %s;' % ( #coding
+            name, str(self.coding).lower()))
+        output.append('%s[\'resources\'] = %s;' % ( #resources
+            name, escape_quote(str(self.resources).lower())))
+        output.append('%s[\'files\'] = %s;' % ( #files
+            name, escape_quote(str(self.files).lower())))
+        output.append('%s[\'overview\'] = %s;' % ( #overview
+            name, escape_quote(str(self.overview).lower())))
+        output.append('%s[\'section_overview\'] = %s;' % ( #section_overview
+            name, escape_quote(str(self.section_overview).lower())))
+        output.append('%s[\'doi\'] = %s;' % ( #doi
+            name, escape_quote(str(self.doi).lower())))
+        output.append('%s[\'total_time\'] = %s;' % ( #total_time
+            name, escape_quote(str(self.total_time).lower())))
+        output.append('%s[\'playlist\'] = %s;' % ( #playlist
+            name, escape_quote(str(self.playlist).lower())))
+        output.append('%s[\'section_id\'] = %s;' % ( #section_id
+            name, escape_quote(str(self.section_id).lower())))
+        output.append('%s[\'section_title\'] = %s;' % ( #section_title
+            name, escape_quote(str(self.section_title).lower())))
+        output.append('%s[\'section_img\'] = %s;' % ( #section_img
+            name, escape_quote(str(self.section_img).lower())))
+        output.append('%s[\'section_time\'] = %s;' % ( #section_time
+            name, escape_quote(str(self.section_time).lower())))
+        output.append('%s[\'cc\'] = %s;' % ( #cc
+            name, escape_quote(str(self.cc).lower())))
+        output.append('%s[\'google_community\'] = %s;' % ( #google_community
+            name, escape_quote(str(self.google_community).lower())))
+        # CGL-MOOC-Builder ends
 
 class Lesson(object):
     """A class to represent a Lesson."""

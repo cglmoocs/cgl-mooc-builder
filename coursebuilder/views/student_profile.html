@@ -12,66 +12,38 @@
   {# I18N: Title of the course progress webpage. #}
   {{ gettext('Course Progress') }}
 {% endblock subtitle %}
-
-{% block top_content %}
-{% endblock %}
-
+{% block top_content %}{% endblock %}
 {% block main_content %}
-<div id="gcb-main">
+<div id="gcb-profile" class="blue">
   <div class="gcb-article tab-content">
     <div class="gcb-aside">
       <h2>
         {# I18N: Title of the student progress page.#}
         {{ gettext('Student Progress') }}
       </h2>
-
       {% if student %}
-
         {% include 'student_data_table.html' %}
-
         {% if can_edit_name %}
-          <form action='student/editstudent' method='post'>
-            <input type="hidden" name="xsrf_token" value="{{ student_edit_xsrf_token|escape }}">
-            <h2><label for="name">
-              {# I18N: Label for the input field that allows the student to change the name on his/her certificate. #}
-              {{ gettext('New Name') }}
-            </label></h2>
-            <fieldset style="border: none;">
-              <p>
-                {# I18N: Label for the input field that allows the student to change the name on his/her certificate. #}
-                <input name="name" id="name" type="text" size="40" aria-label="{{ gettext('New Name') }}">
-                <input type="hidden" name="email" value="{{ student.key().name() }}">
-              </p>
-            </fieldset>
-
-            <p>
-              <button class="gcb-button" type="submit">
-                {# I18N: Text for a button that allows the student to save changes to his/her name for the certificate. #}
-                {{ gettext('Change Name') }}
-              </button>
-            </p>
-          </form>
-
-          <h2>
+            <h2>
             {# I18N: Shown on the student profile page. #}
             {{ gettext('To leave the course permanently, click on Unenroll') }}
-          </h2>
-
-          <p>
+            </h2>
+            
+            <p>
             <a role="button" href="student/unenroll" class="gcb-button">
-              {# I18N: Button that allows the student to unenroll from a course. #}
-              {{ gettext('Unenroll') }}
+                {# I18N: Button that allows the student to unenroll from a course. #}
+                {{ gettext('Unenroll') }}
             </a>
-          </p>
-        {% else %}
-          <p>
-            <a href="/explorer/profile">
-              {# I18N: Text shown on progress page of course to redirect student to profile page. #}
-              {{ gettext('Manage course registration from your profile') }}
-            </a>
-          </p>
-        {% endif %}
+            </p>
 
+        {% elif false %}
+            <p>
+            <a href="/explorer/profile">
+                {# I18N: Text shown on progress page of course to redirect student to profile page. #}
+                {{ gettext('Manage course registration from your profile') }}
+            </a>
+            </p>
+        {% endif %}
       {% else %}
         {# I18N: Shown when the student profile cannot be found in the database. #}
         <p>{{ gettext('Student profile not found ...')}}</p>
@@ -79,5 +51,4 @@
     </div>
   </div>
 </div>
-
 {% endblock %}

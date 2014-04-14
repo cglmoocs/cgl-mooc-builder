@@ -1,0 +1,32 @@
+<style>
+.box, .box .antiscroll-inner {
+	width: 474px;
+	height: 340px;
+}
+.antiscroll-wrap-inst {
+	overflow: hidden;
+	position: relative;
+	display: block !important;
+}
+</style>
+<div class="antiscroll-wrap-inst">
+  <div class="box">
+    <div class="antiscroll-inner">
+      <div class="box-inner">
+        <div class="instructor"> <img src="/assets/img/Geoffrey.jpg" class="instructors-pic" title="Geoffrey Fox" alt="" role="presentation" />
+          <div id="summaryinstructor">
+            <p class="summary-text"><span class="importance"> Instructor </span></p>
+            <p class="summary-text">Professor Geoffrey Fox received a PhD in Theoretical Physics from Cambridge University and is now Professor of Informatics and Computing as well as Physics at Indiana University, where he is director of the Digital Science Center and Associate Dean for Research and Graduate Studies at the School of Informatics and Computing. He previously held positions at Caltech, Syracuse University and Florida State University. </p>
+            <p class="summary-text">He has published around 1,000 papers in Physics and Computer Science, supervised the PhD candidacies of 65 students, and received an h-index of 67 along with over 23000 citations. Professor Fox currently works in applying Computer Science to Bioinformatics, Sensor Clouds, Earthquake and Ice-sheet Science, and Particle Physics. He is principal investigator of FutureGrid – a facility to enable development of new approaches to computing. He is involved in several projects, including the eHumanity portal, to enhance the capability of Minority Serving Institutions. A Fellow of APS and ACM, he has experience in online education and its use in MOOCs for areas like Data and Computational Science.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+/* OS X Lion style cross-browser native scrolling: https://github.com/LearnBoost/antiscroll */
+$(function() {
+  $(".antiscroll-wrap-inst").antiscroll();
+});
+</script>

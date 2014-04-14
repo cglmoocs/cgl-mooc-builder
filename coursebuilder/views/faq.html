@@ -1,0 +1,50 @@
+{% extends 'base_course.html' %}
+{% block subtitle %}
+  {# I18N: Title of the webpage. #}
+  - {{ gettext('FAQ') }}
+{% endblock subtitle %}
+
+{% block main_content %}
+<div class="gcb-aux">
+    <div class="gcb-cols" id="faq-page">
+    	<h2 id="faq-title">FAQ</h2>
+        <div id="faq-accordion">
+	        <h3 class="faq-accordion-title">How do I use Google Communities?</h3>
+            <div class="faq-accordion-content">
+            <p class="faq-accordion-content-text">Google Communities allows you to post any discussion to either the discussion stream or any of the other Section level streams.</p>
+            </div>
+        
+	        <h3 class="faq-accordion-title">Who should take this course?</h3>
+            <div class="faq-accordion-content">
+            <p class="faq-accordion-content-text">Anybody having the desire to learn about Big Data! No programming is required. However, we do provide some technology training using Python using some coding example.</p>
+            </div>
+        
+	        <h3 class="faq-accordion-title">What's the differece between Google Community and traditional forums?</h3>
+            <div id="faq-img">
+            <p id="faq-traditional-forum">Traditional forum works like a file system. Posts are placed in different categories. You can access them only if you are in that category. </p>
+            <p id="faq-google-community">Google community works like a tag system. You can access all posts at one time and you can also choose different tags to filter what post you want to see.</p>
+            </div>
+        
+	        <h3 class="faq-accordion-title">How do I find posts under one category?</h3>
+            <div id="faq-how-category">
+            <p id="faq-how-category-txt1">The category pandel is on the left. Select the category you want to see and click on it.</p>
+            <p id="faq-how-category-txt2">Now all the posts under this category are displaiyed on the right. You can click "All posts" to back.</p>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+$(function() {
+	/* accordion http://api.jqueryui.com/accordion/ */
+	$("#faq-accordion").accordion({
+		active: false,
+		collapsible: true,
+		icons: { "header": "ui-icon-plus ui-icon-large", "activeHeader": "ui-icon-minus ui-icon-large" },
+		heightStyle: "content",
+		disabled: false,
+		clearStyle: true,
+		header: 'h3'
+	});
+});
+</script>
+{% endblock %}

@@ -3,9 +3,12 @@
   <head>
     <base href="{{ gcb_course_base }}" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- (1) Optimize for mobile versions: http://goo.gl/EOpFl -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- (1) force latest IE rendering engine: http://goo.gl/tf4JH -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta charset="utf-8">
-    {% block title %}
-    {% endblock %}
+    {% block title %}{% endblock %}
 
     <!-- The following translated strings are used in activity-generic.js and should be
     declared before that file is imported. -->
@@ -104,8 +107,7 @@
       assessmentTagMessages.yourScoreIs = "{{ gettext(' Your score is: ') }}";
     </script>
 
-    {% block assets %}
-    {% endblock %}
+    {% block assets %}{% endblock %}
 
     <script>
       var eventXsrfToken = '{{ event_xsrf_token }}';
@@ -130,13 +132,13 @@
       <script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
     {% endif %}
 
-    {{course_info.base.before_head_tag_ends | safe}}
+    {# {{course_info.base.before_head_tag_ends | safe}} #}
   </head>
 
-  <body>
-
+<body>
+    <div id="topbg" style="background-color: rgb(0, 51, 102); opacity: 0.25; background-position: initial initial; background-repeat: initial initial;"></div>
     {{course_info.base.after_body_tag_begins | safe}}
-
+    
     <script>
       // Course-Builder specific setup for Google Tag Manager.  Iff
       // Tag Managers is enabled, the values in the dataLayer list of
@@ -184,92 +186,35 @@
         <!-- End Google Tag Manager -->
     {% endif %}
 
+
+    <!-- Top Navigation -->
+    {% include 'top_navbar.html' %}
+    
     <!-- ButterBar -->
     <div class="gcb-butterbar-container">
-      <div id="gcb-butterbar-top" class="gcb-butterbar" style="margin-top:50px" aria-live="polite">
-        <p id="gcb-butterbar-message"></p>
-        <a id="gcb-butterbar-close">X</a>
-      </div>
+        <div id="gcb-butterbar-top" class="gcb-butterbar" style='margin-top:50px'>
+            <p id="gcb-butterbar-message"></p>
+            <a id="gcb-butterbar-close">X</a>
+        </div>
     </div>
 
-    <!-- logo bar -->
-    <div id="gcb-header" role="banner">
-      <div class="gcb-aux">
-        <p class="gcb-course-image">
-          <a href="./">
-            <img src="{{course_info.institution.logo.url}}"
-                 alt="{{course_info.institution.logo.alt_text}}">
-          </a>
-        </p>
-        <p class="gcb-title-header">
-          <a href="./">{{course_info.base.nav_header}}</a>
-        </p>
-        {% if course_info.base.show_gplus_button %}
-          <span class="plusone-button" id="plusone-3" style="height: 15px; width: 70px; display: inline-block; text-indent: 0px; margin: 0px; padding: 0px; background-color: transparent; border-style: none; float: none; line-height: normal; font-size: 1px; vertical-align: baseline; background-position: initial initial; background-repeat: initial initial; ">
-            <g:plusone size="medium"></g:plusone>
-          </span>
-        {% endif %}
-
-        {% if logoutUrl %}
-        <div class="gcb-pull-right" style="font-size: larger;">
-          {{ email }}
-          {% if transient_student and can_register %}
-            {# I18N: Text shown in parentheses next to the student's email address at the top-right of all course pages, if the student is logged in but not registered for the course he/she is currently browsing. #}
-            ({{ gettext('Not registered') }})
-          {% endif %}
-          &nbsp;|&nbsp;
-          <a href="{{ logoutUrl }}" style="text-decoration: underline;">
-            {# I18N: Navbar text. #}
-            {{ gettext('Logout') }}
-          </a>
-        </div>
-        {% elif loginUrl %}
-        <div class="gcb-pull-right" style="font-size: larger;">
-          {# I18N: Navbar text. #}
-          <a href="{{ loginUrl }}">{{ gettext('Login') }}</a>
-        </div>
-        {% endif %}
-      </div>
-    </div>
-
-    {% block navbar %}
-    {% endblock %}
-
-    <!-- top section -->
+    <!-- Top Logo Bar -->
+    {% include 'header.html' %}
+    
+    {% block navbar %}{% endblock %}
+    
+    <!-- top content, main content -->
     <div class="is-wrapper">
-      <div class="gcb-aux">
-        {% block top_content %}{% endblock %}
-        {{course_info.base.after_top_content_ends | safe}}
-
-        <!-- main section -->
-        {% block main_content %}{% endblock %}
-        {{course_info.base.after_main_content_ends | safe}}
-      </div>
-    </div>
-
-    <!-- footer section -->
-    <div style="margin-top: 50px;" id="gcb-signature"></div>
-    <div class="gcb-footer" id="gcb-footer">
-      <div id="gcb-footer-local">
         <div class="gcb-aux">
+            {% block top_content %}{% endblock %}
+            {{course_info.base.after_top_content_ends | safe}}
+            {% block main_content %}{% endblock %}
+            {{course_info.base.after_main_content_ends | safe}}
         </div>
-      </div>
-      <div id="gcb-footer-global" role="contentinfo">
-        <div class="gcb-aux">
-          <ul>
-            <li>
-              <a href="{{course_info.institution.url}}">{{course_info.institution.name}}</a>
-            </li>
-            <li>
-              <a href="{{course_info.base.privacy_terms_url}}">
-                {# I18N: Link at the bottom of each page to the privacy and 'Terms and Conditions' pages. #}
-                {{ gettext('Privacy & Terms') }}
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
     </div>
+    
+    <!-- Footer -->
+    {% include 'footer.html' %}
     {{course_info.base.before_body_tag_ends | safe}}
- </body>
+</body>
 </html>

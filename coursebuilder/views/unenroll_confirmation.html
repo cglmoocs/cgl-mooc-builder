@@ -8,17 +8,12 @@
   }
 {% endblock %}
 
-{% block top_content %}
-{% endblock %}
-
-{% block navbar %}
-{% endblock %}
-
+{% block top_content %}{% endblock %}
+{% block navbar %}{% endblock %}
 {% block main_content %}
 <div id="gcb-main">
   <div class="gcb-article tab-content">
     <div class="gcb-aside">
-
       <h3>
         {# I18N: Text shown after a student has unenrolled from a course. It is followed by a course name. #}
         {{ gettext('You have been unenrolled from ') }}
@@ -30,7 +25,6 @@
           {{ gettext('OK') }}
         </button>
       </form>
-
     </div>
   </div>
 </div>

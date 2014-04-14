@@ -41,6 +41,9 @@ from tools import verify
 from google.appengine.api import namespace_manager
 from google.appengine.ext import db
 
+# CGL-MOOC-Builder: import groupby
+from itertools import groupby
+
 COURSE_MODEL_VERSION_1_2 = '1.2'
 COURSE_MODEL_VERSION_1_3 = '1.3'
 
@@ -228,9 +231,15 @@ def load_csv_course(app_context):
 
 
 def index_units_and_lessons(course):
-    """Index all 'U' type units and their lessons. Indexes are 1-based."""
+    """CGL-MOOC-Builder modified:
+       Index all 'U' type units and their lessons.
+       Indexes are 1-based. Sorted by section id before indexing.
+    """
     unit_index = 1
-    for unit in course.get_units():
+    # CGL-MOOC-Builder: sort units by section ids
+    sorted_units = sorted(
+        course.get_units(), key = lambda x: int(x.section_id or 0))
+    for unit in sorted_units:
         if verify.UNIT_TYPE_UNIT == unit.type:
             unit._index = unit_index  # pylint: disable-msg=protected-access
             unit_index += 1
@@ -240,7 +249,6 @@ def index_units_and_lessons(course):
                 lesson._index = (  # pylint: disable-msg=protected-access
                     lesson_index)
                 lesson_index += 1
-
 
 def create_course_registry():
     """Create the registry for course properties."""
@@ -415,6 +423,22 @@ class Unit12(object):
         self.title = ''
         self.release_date = ''
         self.now_available = False
+        # CGL-MOOC-Builder starts: additional data fields for a unit
+        self.coding = ''
+        self.resources = ''
+        self.files = ''
+        self.overview = ''
+        self.section_overview = ''
+        self.doi = ''
+        self.total_time = ''
+        self.playlist = ''
+        self.section_id = ''
+        self.section_title = ''
+        self.section_img = ''
+        self.section_time = ''
+        self.cc = ''
+        self.google_community = ''
+        # CGL-MOOC-Builder ends
 
         # Units of 'U' types have 1-based index. An index is automatically
         # computed.
@@ -645,6 +669,23 @@ class Unit13(object):
         self.release_date = ''
         self.now_available = False
 
+        # CGL-MOOC-Builder starts: additional data fields for a unit
+        self.coding = ''
+        self.resources = ''
+        self.files = ''
+        self.overview = ''
+        self.section_overview = ''
+        self.doi = ''
+        self.total_time = ''
+        self.playlist = ''
+        self.section_id = 0
+        self.section_title = ''
+        self.section_img = ''
+        self.section_time = ''
+        self.cc = ''
+        self.google_community = ''
+        # CGL-MOOC-Builder ends
+
         # custom properties
         self.properties = {}
 
@@ -718,9 +759,11 @@ class PersistentCourse13(object):
 
     COURSES_FILENAME = 'data/course.json'
 
-    def __init__(self, next_id=None, units=None, lessons=None):
+    def __init__(self, next_id=None, units=None, lessons=None, next_section_id=None):
         self.version = CourseModel13.VERSION
         self.next_id = next_id
+        # CGL-MOOC-Builder: next_section_id
+        self.next_section_id = next_section_id
         self.units = units
         self.lessons = lessons
 
@@ -729,6 +772,7 @@ class PersistentCourse13(object):
         result = {}
         result['version'] = str(self.version)
         result['next_id'] = int(self.next_id)
+        result['next_section_id'] = int(self.next_section_id)
 
         units = []
         for unit in self.units:
@@ -745,6 +789,8 @@ class PersistentCourse13(object):
     def _from_dict(self, adict):
         """Loads instance attributes from the dict."""
         self.next_id = int(adict.get('next_id'))
+        # CGL-MOOC-Builder: next_section_id
+        self.next_section_id = int(adict.get('next_section_id'))
 
         self.units = []
         unit_dicts = adict.get('units')
@@ -776,9 +822,11 @@ class PersistentCourse13(object):
     @classmethod
     def save(cls, app_context, course):
         """Saves course to datastore."""
+        # CGL-MOOC-Builder: added next_section_id
         persistent = PersistentCourse13(
             next_id=course.next_id,
-            units=course.units, lessons=course.lessons)
+            units=course.units, lessons=course.lessons,
+            next_section_id=course.next_section_id)
 
         fs = app_context.fs.impl
         filename = fs.physical_to_logical(cls.COURSES_FILENAME)
@@ -795,7 +843,8 @@ class PersistentCourse13(object):
             persistent.deserialize(app_context.fs.get(filename))
             return CourseModel13(
                 app_context, next_id=persistent.next_id,
-                units=persistent.units, lessons=persistent.lessons)
+                units=persistent.units, lessons=persistent.lessons,
+                next_section_id=persistent.next_section_id)
         return None
 
     def serialize(self):
@@ -821,12 +870,13 @@ class CachedCourse13(AbstractCachedObject):
 
     def __init__(
         self, next_id=None, units=None, lessons=None,
-        unit_id_to_lesson_ids=None):
+        unit_id_to_lesson_ids=None, next_section_id=None):
 
         self.version = self.VERSION
         self.next_id = next_id
         self.units = units
         self.lessons = lessons
+        self.next_section_id = next_section_id
 
         # This is almost the same as PersistentCourse13 above, but it also
         # stores additional indexes used for performance optimizations. There
@@ -840,17 +890,21 @@ class CachedCourse13(AbstractCachedObject):
 
     @classmethod
     def instance_from_memento(cls, app_context, memento):
+        # CGL-MOOC-Builder: added next_section_id
         return CourseModel13(
             app_context, next_id=memento.next_id,
             units=memento.units, lessons=memento.lessons,
-            unit_id_to_lesson_ids=memento.unit_id_to_lesson_ids)
+            unit_id_to_lesson_ids=memento.unit_id_to_lesson_ids,
+            next_section_id=memento.next_section_id)
 
     @classmethod
     def memento_from_instance(cls, course):
+        # CGL-MOOC-Builder: added next_section_id
         return CachedCourse13(
             next_id=course.next_id,
             units=course.units, lessons=course.lessons,
-            unit_id_to_lesson_ids=course.unit_id_to_lesson_ids)
+            unit_id_to_lesson_ids=course.unit_id_to_lesson_ids,
+            next_section_id=course.next_section_id)
 
 
 class CourseModel13(object):
@@ -881,11 +935,13 @@ class CourseModel13(object):
 
     def __init__(
         self, app_context, next_id=None, units=None, lessons=None,
-        unit_id_to_lesson_ids=None):
+        unit_id_to_lesson_ids=None, next_section_id=None):
 
         # Init default values.
         self._app_context = app_context
         self._next_id = 1  # a counter for creating sequential entity ids
+        # CGL-MOOC-Builder: a counter for creating sequential section ids
+        self._next_section_id = 1
         self._units = []
         self._lessons = []
         self._unit_id_to_lesson_ids = {}
@@ -897,6 +953,9 @@ class CourseModel13(object):
         self._deleted_lessons = []
 
         # Set provided values.
+        # CGL-MOOC-Builder: set section id
+        if next_section_id:
+            self._next_section_id = next_section_id
         if next_id:
             self._next_id = next_id
         if units:
@@ -917,6 +976,10 @@ class CourseModel13(object):
         return self._next_id
 
     @property
+    def next_section_id(self):
+        return self._next_section_id
+
+    @property
     def units(self):
         return self._units
 
@@ -927,6 +990,53 @@ class CourseModel13(object):
     @property
     def unit_id_to_lesson_ids(self):
         return self._unit_id_to_lesson_ids
+
+    def _update_section_content_for_all_units(
+        self, s_id, s_title, s_img, s_time, s_overview):
+        """CGL-MOOC-Builder:
+           When any section information gets updated,
+           all of its units gets updated"""
+        sorted_units = sorted(self.get_units(), key = lambda x: int(x.section_id or 0))
+        groups = []
+        keys = []
+        for k, g in groupby(sorted_units, key = lambda x: int(x.section_id or 0)):
+            groups.append(list(g))
+            keys.append(k)
+        for group in groups:
+            for u in group:
+                if u.section_id == s_id:
+                    u.section_title = s_title
+                    u.section_time = s_time
+                    u.section_img = s_img
+                    u.section_overview = s_overview
+                    u.section_id = s_id
+
+    def _reorder_section_id(self):
+        """CGL-MOOC-Builder: reorder section ids in sequence."""
+        sorted_units = sorted(self.get_units(), key = lambda x: int(x.section_id or 0))
+        groups = []
+        keys = []
+        counter = 0
+        for k, g in groupby(sorted_units, key = lambda x: int(x.section_id or 0)):
+            groups.append(list(g))
+            keys.append(k)
+        for group in groups:
+            counter += 1
+            for u in group:
+                u.section_id = counter
+
+        new_section_id = counter + 1
+        self._set_next_section_id(new_section_id)
+
+    def _set_next_section_id(self, new_section_id):
+        """CGL-MOOC-Builder: set the next section id"""
+        self._next_section_id = new_section_id
+
+    def _get_next_section_id(self):
+        """CGL-MOOC-Builder: allocates next section id in sequence."""
+        next_section_id = self._next_section_id
+        self._next_section_id += 1
+        return next_section_id
 
     def _get_next_id(self):
         """Allocates next id in sequence."""
@@ -1069,6 +1179,24 @@ class CourseModel13(object):
                 return lesson
         return None
 
+    def add_section(self, unit_type, title):
+        """CGL-MOOC-Builder:
+           Adds a new unit with a new section."""
+        assert unit_type in verify.UNIT_TYPES
+
+        unit = Unit13()
+        unit.type = unit_type
+        unit.unit_id = self._get_next_id()
+        unit.title = title
+        unit.now_available = False
+        unit.section_id = self._get_next_section_id()
+
+        self._units.append(unit)
+        self._index()
+
+        self._dirty_units.append(unit)
+        return unit
+
     def add_unit(self, unit_type, title):
         """Adds a brand new unit."""
         assert unit_type in verify.UNIT_TYPES
@@ -1078,6 +1206,7 @@ class CourseModel13(object):
         unit.unit_id = self._get_next_id()
         unit.title = title
         unit.now_available = False
+        unit.section_id = 1
 
         self._units.append(unit)
         self._index()
@@ -1170,9 +1299,34 @@ class CourseModel13(object):
             self.delete_lesson(lesson)
         self._units.remove(unit)
         self._index()
+
+        # CGL-MOOC-Builder: reorder section id
+        self._reorder_section_id()
+
         self._deleted_units.append(unit)
         self._dirty_units.append(unit)
         return True
+
+    def update_section(self, unit):
+        """CGL-MOOC-Builder: updates section content"""
+        existing_unit = self.find_unit_by_id(unit.unit_id)
+        if not existing_unit:
+            return False
+        existing_unit.section_title = unit.section_title
+        existing_unit.section_img = unit.section_img
+        existing_unit.section_time = unit.section_time
+        existing_unit.section_overview = unit.section_overview
+
+        # CGL-MOOC-Builder:
+        # Update section_title, section_img, section_time and section_overview
+        # for all units in that particular section.
+        self._update_section_content_for_all_units(
+            unit.section_id, unit.section_title, unit.section_img,
+            unit.section_time, unit.section_overview)
+
+        self._reorder_section_id()
+        self._dirty_units.append(existing_unit)
+        return existing_unit
 
     def update_unit(self, unit):
         """Updates an existing unit."""
@@ -1182,7 +1336,22 @@ class CourseModel13(object):
         existing_unit.title = unit.title
         existing_unit.release_date = unit.release_date
         existing_unit.now_available = unit.now_available
-
+        # CGL-MOOC-Builder starts: additional data fields for a unit
+        existing_unit.coding = unit.coding
+        existing_unit.resources = unit.resources
+        existing_unit.files = unit.files
+        existing_unit.overview = unit.overview
+        existing_unit.doi = unit.doi
+        existing_unit.total_time = unit.total_time
+        existing_unit.playlist = unit.playlist
+        existing_unit.section_id = unit.section_id
+        #existing_unit.section_title = unit.section_title
+        #existing_unit.section_img = unit.section_img
+        #existing_unit.section_time = unit.section_time
+        #existing_unit.section_overview = unit.section_overview
+        existing_unit.cc = unit.cc
+        existing_unit.google_community = unit.google_community
+        # CGL-MOOC-Builder ends
         if verify.UNIT_TYPE_LINK == existing_unit.type:
             existing_unit.href = unit.href
 
@@ -1192,6 +1361,35 @@ class CourseModel13(object):
             existing_unit.html_check_answers = unit.html_check_answers
             existing_unit.html_review_form = unit.html_review_form
             existing_unit.workflow_yaml = unit.workflow_yaml
+        # CGL-MOOC-Builder:
+        # 
+        sorted_units = sorted(self.get_units(), key = lambda x: int(x.section_id or 0))
+        groups = []
+        keys = []
+        for k, g in groupby(sorted_units, key = lambda x: int(x.section_id or 0)):
+            groups.append(list(g))
+            keys.append(k)
+        for group in groups:
+            for u in group:
+                if u.section_id == unit.section_id:
+                    existing_unit.section_title = u.section_title
+                    existing_unit.section_img = u.section_img
+                    existing_unit.section_time = u.section_time
+                    existing_unit.section_overview = u.section_overview
+                    #break
+
+        # CGL-MOOC-Builder:
+        # Update section_title, section_img, section_time and section_overview
+        # for all units in that particular section.
+        #self._update_section_content_for_all_units(
+        #    existing_unit.section_id, existing_unit.section_title,
+        #    existing_unit.section_img, existing_unit.section_time,
+        #    existing_unit.section_overview)
+
+        # CGL-MOOC-Builder:
+        # In case of moving the only unit of a section to another section,
+        # reorder section ids so that section ids are sorted and in sequence.
+        self._reorder_section_id()
 
         self._dirty_units.append(existing_unit)
         return existing_unit
@@ -1380,7 +1578,23 @@ class CourseModel13(object):
             dst_unit.title = src_unit.title
             dst_unit.release_date = src_unit.release_date
             dst_unit.now_available = src_unit.now_available
-
+            # CGL-MOOC-Builder starts:
+            # Additional data fields for a unit
+            dst_unit.coding = src_unit.coding
+            dst_unit.resources = src_unit.resources
+            dst_unit.files = src_unit.files
+            dst_unit.overview = src_unit.overview
+            dst_unit.section_overview = src_unit.section_overview
+            dst_unit.doi = src_unit.doi
+            dst_unit.total_time = src_unit.total_time
+            dst_unit.playlist = src_unit.playlist
+            dst_unit.section_id = src_unit.section_id
+            dst_unit.section_title = src_unit.section_title
+            dst_unit.section_img = src_unit.section_img
+            dst_unit.section_time = src_unit.section_time
+            dst_unit.cc = src_unit.cc
+            dst_unit.google_community = src_unit.google_community
+            # CGL-MOOC-Builder ends
             if verify.UNIT_TYPE_LINK == dst_unit.type:
                 dst_unit.href = src_unit.href
 
@@ -1547,7 +1761,8 @@ class CourseModel13(object):
     def to_json(self):
         """Creates JSON representation of this instance."""
         persistent = PersistentCourse13(
-            next_id=self._next_id, units=self._units, lessons=self._lessons)
+            next_id=self._next_id, units=self._units, lessons=self._lessons,
+            next_section_id=self._next_section_id)
         return transforms.dumps(
             persistent.to_dict(),
             indent=4, sort_keys=True,
@@ -1807,6 +2022,10 @@ class Course(object):
                 return current_unit.unit_id == unit.unit_id
         return False
 
+    def add_section(self):
+        """CGL-MOOC-Builder: adds new section to a course."""
+        return self._model.add_section('U', 'New Unit')
+
     def add_unit(self):
         """Adds new unit to a course."""
         return self._model.add_unit('U', 'New Unit')
@@ -1821,6 +2040,10 @@ class Course(object):
 
     def add_lesson(self, unit):
         return self._model.add_lesson(unit, 'New Lesson')
+
+    def update_section(self, unit):
+        """CGL-MOOC-Builder: update section content"""
+        return self._model.update_section(unit)
 
     def update_unit(self, unit):
         return self._model.update_unit(unit)

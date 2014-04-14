@@ -65,6 +65,10 @@ def get_first_lesson(handler, unit_id):
     lessons = handler.get_course().get_lessons(unit_id)
     return lessons[0] if lessons else None
 
+def get_all_lesson(handler, unit_id):
+    """CGL-MOOC-Builder: returns all lessons in the unit."""
+    lessons = handler.get_course().get_lessons(unit_id)
+    return lessons if lessons else None
 
 def extract_unit_and_lesson(handler):
     """Loads unit and lesson specified in the request."""
@@ -167,7 +171,7 @@ class CourseHandler(BaseHandler):
             self.redirect('/preview')
             return
 
-        self.template_value['units'] = self.get_units()
+        self.template_value['units'] = sorted(self.get_units(), key = lambda x: int(x.section_id or 999))
         self.template_value['show_registration_page'] = True
 
         if student and not student.is_transient:
@@ -198,7 +202,119 @@ class CourseHandler(BaseHandler):
         self.template_value['is_progress_recorded'] = (
             CAN_PERSIST_ACTIVITY_EVENTS.value)
         self.template_value['navbar'] = {'course': True}
+
+        # CGL-MOOC-Builder starts:
+        # Set template value for students progress bar that shows on the top navigation(header.html)
+        total_progress = (self.get_progress_tracker().get_overall_progress_score(student))
+        self.template_value['progress_value'] = total_progress.get('progress_score', 0)
+        self.template_value['complete_value'] = total_progress.get('completed_score', 0)
+        self.template_value['percentage'] = total_progress.get('percentage', '')
+        # Set template value for all lesson information in course_structure.html
+        all_lessons = {}
+        for u in self.template_value['units']:
+            if u.type == 'U':
+                all_lessons[u.unit_id] = get_all_lesson(self, u.unit_id)
+        self.template_value['all_lessons'] = all_lessons
+        # CGL-MOOC-Builder ends
+
         self.render('course.html')
+
+
+class HomeHandler(BaseHandler):
+    """CGL-MOOC-Builder: Handler for generating home page(home.html)"""
+
+    @classmethod
+    def get_child_routes(cls):
+        """Add child handlers for REST."""
+        return [('/rest/events', EventsRESTHandler)]
+
+    def augment_assessment_units(self, student):
+        """Adds additional fields to assessment units."""
+        course = self.get_course()
+        rp = course.get_reviews_processor()
+
+        for unit in self.template_value['units']:
+            if unit.type == 'A':
+                unit.needs_human_grader = course.needs_human_grader(unit)
+                if unit.needs_human_grader:
+                    review_steps = rp.get_review_steps_by(
+                        unit.unit_id, student.get_key())
+                    review_min_count = unit.workflow.get_review_min_count()
+
+                    unit.matcher = unit.workflow.get_matcher()
+                    unit.review_progress = ReviewUtils.get_review_progress(
+                        review_steps, review_min_count,
+                        course.get_progress_tracker()
+                    )
+
+                    unit.is_submitted = rp.does_submission_exist(
+                        unit.unit_id, student.get_key())
+
+    def get(self):
+        """Handles GET requests."""
+        user = self.personalize_page_and_get_user()
+        if user is None:
+            student = TRANSIENT_STUDENT
+        else:
+            student = Student.get_enrolled_student_by_email(user.email())
+            profile = StudentProfileDAO.get_profile_by_user_id(user.user_id())
+            self.template_value['has_global_profile'] = profile is not None
+            if not student:
+                student = TRANSIENT_STUDENT
+
+        if (student.is_transient and
+            not self.app_context.get_environ()['course']['browsable']):
+            self.redirect('/preview')
+            return
+        # CGL-MOOC-Builder:
+        self.template_value['units'] = self.get_units()
+        self.template_value['sorted_units'] = self.get_units_groupby_section()
+        self.template_value['show_registration_page'] = True
+
+        if student and not student.is_transient:
+            self.augment_assessment_units(student)
+        elif user:
+            profile = StudentProfileDAO.get_profile_by_user_id(user.user_id())
+            additional_registration_fields = self.app_context.get_environ(
+                )['reg_form']['additional_registration_fields']
+            if profile is not None and not additional_registration_fields:
+                self.template_value['show_registration_page'] = False
+                self.template_value['register_xsrf_token'] = (
+                    XsrfTokenManager.create_xsrf_token('register-post'))
+
+        self.template_value['transient_student'] = student.is_transient
+        self.template_value['progress'] = (
+            self.get_progress_tracker().get_unit_progress(student))
+
+        course = self.app_context.get_environ()['course']
+        self.template_value['video_exists'] = bool(
+            'main_video' in course and
+            'url' in course['main_video'] and
+            course['main_video']['url'])
+        self.template_value['image_exists'] = bool(
+            'main_image' in course and
+            'url' in course['main_image'] and
+            course['main_image']['url'])
+
+        self.template_value['is_progress_recorded'] = (
+            CAN_PERSIST_ACTIVITY_EVENTS.value)
+        self.template_value['navbar'] = {'course': True}
+
+        # CGL-MOOC-Builder starts:
+        # Set template value for students progress bar that shows on the top navigation(header.html)
+        total_progress = (self.get_progress_tracker().get_overall_progress_score(student))
+        self.template_value['progress_value'] = total_progress.get('progress_score', 0)
+        self.template_value['complete_value'] = total_progress.get('completed_score', 0)
+        self.template_value['percentage'] = total_progress.get('percentage', '')
+        # Set template value for all lesson information in course_structure.html
+        all_lessons = {}
+        for u in self.template_value['units']:
+            if u.type == 'U':
+                all_lessons[u.unit_id] = get_all_lesson(self, u.unit_id)
+        self.template_value['all_lessons'] = all_lessons
+        # CGL-MOOC-Builder ends
+
+        self.render('home.html')
 
 
 class UnitHandler(BaseHandler):
@@ -259,32 +375,53 @@ class UnitHandler(BaseHandler):
 
         index = lesson.index - 1  # indexes are 1-based
 
+        # Google Course Builder starts:
         # Format back button.
+        #if index == 0:
+        #    self.template_value['back_button_url'] = ''
+        #else:
+        #    prev_lesson = lessons[index - 1]
+        #    if self._show_activity_on_separate_page(prev_lesson):
+        #        self.template_value['back_button_url'] = (
+        #            'activity?unit=%s&lesson=%s' % (
+        #                unit_id, prev_lesson.lesson_id))
+        #    else:
+        #        self.template_value['back_button_url'] = (
+        #            'unit?unit=%s&lesson=%s' % (unit_id, prev_lesson.lesson_id))
+
+        # Format next button.
+        #if self._show_activity_on_separate_page(lesson):
+        #    self.template_value['next_button_url'] = (
+        #        'activity?unit=%s&lesson=%s' % (
+        #            unit_id, lesson_id))
+        #else:
+        #    if index >= len(lessons) - 1:
+        #        self.template_value['next_button_url'] = ''
+        #    else:
+        #        next_lesson = lessons[index + 1]
+        #        self.template_value['next_button_url'] = (
+        #            'unit?unit=%s&lesson=%s' % (
+        #                unit_id, next_lesson.lesson_id))
+        # Google Course Builder ends
+
+        # CGL-MOOC-Builder starts:
+        # Format back button so that it won't go to activity page.
+        # Activity is in the same unit page(unit.html)
         if index == 0:
             self.template_value['back_button_url'] = ''
         else:
             prev_lesson = lessons[index - 1]
-            if self._show_activity_on_separate_page(prev_lesson):
-                self.template_value['back_button_url'] = (
-                    'activity?unit=%s&lesson=%s' % (
-                        unit_id, prev_lesson.lesson_id))
-            else:
-                self.template_value['back_button_url'] = (
-                    'unit?unit=%s&lesson=%s' % (unit_id, prev_lesson.lesson_id))
-
+            self.template_value['back_button_url'] = (
+                'unit?unit=%s&lesson=%s' % (unit_id, prev_lesson.lesson_id))
         # Format next button.
-        if self._show_activity_on_separate_page(lesson):
-            self.template_value['next_button_url'] = (
-                'activity?unit=%s&lesson=%s' % (
-                    unit_id, lesson_id))
+        if index >= len(lessons) - 1:
+            self.template_value['next_button_url'] = ''
         else:
-            if index >= len(lessons) - 1:
-                self.template_value['next_button_url'] = ''
-            else:
-                next_lesson = lessons[index + 1]
-                self.template_value['next_button_url'] = (
-                    'unit?unit=%s&lesson=%s' % (
-                        unit_id, next_lesson.lesson_id))
+            next_lesson = lessons[index + 1]
+            self.template_value['next_button_url'] = (
+                'unit?unit=%s&lesson=%s' % (
+                    unit_id, next_lesson.lesson_id))
+        # CGL-MOOC-Builder ends
 
         # Set template values for student progress
         self.template_value['is_progress_recorded'] = (
@@ -300,6 +437,17 @@ class UnitHandler(BaseHandler):
             self.get_course().get_progress_tracker().put_html_accessed(
                 student, unit_id, lesson_id)
 
+        # CGL-MOOC-Builder starts:
+        # Set template value for activity script
+        # because we want to display activity in the unit page(unit.html)
+        self.template_value['activity_script_src'] = (
+            self.get_course().get_activity_filename(unit_id, lesson_id))
+        # Set template value for student progress bar that shows on the top navigation(header.html)
+        total_progress = (self.get_progress_tracker().get_overall_progress_score(student))
+        self.template_value['progress_value'] = total_progress.get('progress_score', 0)
+        self.template_value['complete_value'] = total_progress.get('completed_score', 0)
+        self.template_value['percentage'] = total_progress.get('percentage', '')
+        # CGL-MOOC-Builder ends
         self.render('unit.html')
 
 
@@ -495,6 +643,13 @@ class AssessmentHandler(BaseHandler):
                     unit.unit_id, student.get_key())
             configure_active_view(unit, submission_contents)
 
+        # CGL-MOOC-Builder starts:
+        # Set template value for students progress bar that shows on the top navigation(header.html)
+        total_progress = (self.get_progress_tracker().get_overall_progress_score(student))
+        self.template_value['progress_value'] = total_progress.get('progress_score', 0)
+        self.template_value['complete_value'] = total_progress.get('completed_score', 0)
+        self.template_value['percentage'] = total_progress.get('percentage', '')
+        # CGL-MOOC-Builder ends
         self.render('assessment.html')
 
     def configure_readonly_view_1_4(self, unit, submission_contents):
@@ -583,6 +738,14 @@ class ReviewDashboardHandler(BaseHandler):
             self.error(404)
             return
 
+        # CGL-MOOC-Builder starts:
+        # Set template value for students progress bar that shows on the top navigation(header.html)
+        total_progress = (self.get_progress_tracker().get_overall_progress_score(student))
+        self.template_value['progress_value'] = total_progress.get('progress_score', 0)
+        self.template_value['complete_value'] = total_progress.get('completed_score', 0)
+        self.template_value['percentage'] = total_progress.get('percentage', '')
+        # CGL-MOOC-Builder ends
+
         # Check that the student has submitted the corresponding assignment.
         if not rp.does_submission_exist(unit.unit_id, student.get_key()):
             self.template_value['error_code'] = (
@@ -614,6 +777,14 @@ class ReviewDashboardHandler(BaseHandler):
         if not self.assert_xsrf_token_or_fail(
                 self.request, 'review-dashboard-post'):
             return
+
+        # CGL-MOOC-Builder starts:
+        # Set template value for students progress bar that shows on the top navigation(header.html)
+        total_progress = (self.get_progress_tracker().get_overall_progress_score(student))
+        self.template_value['progress_value'] = total_progress.get('progress_score', 0)
+        self.template_value['complete_value'] = total_progress.get('completed_score', 0)
+        self.template_value['percentage'] = total_progress.get('percentage', '')
+        # CGL-MOOC-Builder ends
 
         course = self.get_course()
         unit, unused_lesson = extract_unit_and_lesson(self)
@@ -763,6 +934,14 @@ class ReviewHandler(BaseHandler):
         self.template_value['event_xsrf_token'] = (
             XsrfTokenManager.create_xsrf_token('event-post'))
 
+        # CGL-MOOC-Builder starts:
+        # Set template value for students progress bar that shows on the top navigation(header.html)
+        total_progress = (self.get_progress_tracker().get_overall_progress_score(student))
+        self.template_value['progress_value'] = total_progress.get('progress_score', 0)
+        self.template_value['complete_value'] = total_progress.get('completed_score', 0)
+        self.template_value['percentage'] = total_progress.get('percentage', '')
+        # CGL-MOOC-Builder ends
+
         self.render('review.html')
 
     def configure_assessment_view_1_4(self, unit, submission_contents):
@@ -868,6 +1047,13 @@ class ReviewHandler(BaseHandler):
             self.render('error.html')
             return
 
+        # CGL-MOOC-Builder starts:
+        # Set template value for students progress bar that shows on the top navigation(header.html)
+        total_progress = (self.get_progress_tracker().get_overall_progress_score(student))
+        self.template_value['progress_value'] = total_progress.get('progress_score', 0)
+        self.template_value['complete_value'] = total_progress.get('completed_score', 0)
+        self.template_value['percentage'] = total_progress.get('percentage', '')
+        # CGL-MOOC-Builder ends
         self.render('review_confirmation.html')
 
 

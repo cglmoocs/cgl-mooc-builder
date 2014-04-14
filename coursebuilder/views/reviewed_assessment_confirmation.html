@@ -9,17 +9,14 @@
   }
 {% endblock %}
 
-{% block top_content %}
-{% endblock %}
-
+{% block top_content %}{% endblock %}
 {% block main_content %}
-
 <div class="gcb-cols">
   <div class="gcb-col-1">
   </div>
   <div class="gcb-col-7 gcb-aside gcb-button-box">
 
-    <p class="gcb-top-content" role="heading">
+    <p class="gcb-top-content">
       {% if previously_submitted %}
         {# I18N: Shown on the assignment submission confirmation page when the student has submitted a duplicate assignment. #}
         {{ gettext('You have already submitted this assignment. Your latest attempt has not been saved.') }}
@@ -48,5 +45,4 @@
 
   </div>
 </div>
-
 {% endblock %}

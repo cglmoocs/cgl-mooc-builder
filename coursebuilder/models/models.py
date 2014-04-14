@@ -391,6 +391,31 @@ class StudentProfileDAO(object):
         student.user_id = user_id
         student.additional_fields = additional_fields
 
+        # CGL-MOOC-Builder starts: additional data fields for a student
+        additional_data = transforms.loads(additional_fields)
+        for st in additional_data:
+            if st[0] == 'age':
+                student.age = st[1]
+            elif st[0] == 'city':
+                student.city = st[1]
+            elif st[0] == 'state':
+                student.state = st[1]
+            elif st[0] == 'country':
+                student.country = st[1]
+            elif st[0] == 'education':
+                student.education = st[1]
+            elif st[0] == 'profession':
+                student.profession = st[1]
+            elif st[0] == 'organization':
+                student.organization = st[1]
+            elif st[0] == 'motivation':
+                student.motivation = st[1]
+            elif st[0] == 'referral':
+                student.referral = st[1]
+            elif st[0] == 'privacy':
+                student.privacy = st[1]
+        # CGL-MOOC-Builder ends
+
         # put both
         cls._put_profile(profile)
         student.put()
@@ -440,6 +465,19 @@ class Student(BaseEntity):
     name = db.StringProperty(indexed=False)
     additional_fields = db.TextProperty(indexed=False)
     is_enrolled = db.BooleanProperty(indexed=False)
+
+    # CGL-MOOC-Builder starts: additional data fields for a student
+    age = db.StringProperty(indexed=False)          #Age
+    city = db.StringProperty(indexed=False)         #City
+    state = db.StringProperty(indexed=False)        #State
+    country = db.StringProperty(indexed=False)      #Country
+    education = db.StringProperty(indexed=False)    #Education
+    profession = db.StringProperty(indexed=False)   #Profession
+    organization = db.StringProperty(indexed=False) #Organization
+    motivation = db.TextProperty(indexed=False)     #Motivation
+    referral = db.StringProperty(indexed=False)     #Referral
+    privacy = db.TextProperty(indexed=False)        #Privacy
+    # CGL-MOOC-Builder ends
 
     # Each of the following is a string representation of a JSON dict.
     scores = db.TextProperty(indexed=False)

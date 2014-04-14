@@ -29,7 +29,7 @@ course:
   admin_user_emails: ''
 
   # Course title
-  title: 'Power Searching with Google'
+  title: 'Big Data MOOC from CGL MOOC Builder'
 
   # Main page blurb. (The '|' at the beginning enables multi-line input.)
   blurb: |
@@ -80,7 +80,7 @@ course:
 
   # Whether the course material can be accessed without requiring users to log
   # in or register.
-  browsable: true
+  browsable: false
 
   # Google Analytics tag: Fill this in with a value obtained by signing up
   # at http://www.google.com/analytics.  Note that you may wish instead to

@@ -5,13 +5,12 @@
   - {{ gettext('Announcements') }}
 {% endblock subtitle %}
 
-{% block top_content %}
-{% endblock %}
+{% block top_content %}{% endblock %}
 
 {% block main_content %}
-<div id="gcb-main">
+<div id="gcb-main" class="blue">
   <div class="gcb-article tab-content">
-    <div class="gcb-aside">
+    <div class="gcb-aside announcement">
       {% if announcements %}
         {% if announcements.add_action %}
           <form id='gcb-add-announcement' action='{{ announcements.add_action }}' method='POST'>
@@ -25,7 +24,7 @@
           <p>{{ gettext('No announcements yet.') }}</p>
         {% endif %}
         {% for item in announcements.children %}
-          <hr>
+
           {% if item.delete_action %}
           <form id='gcb-delete-announcement-{{ loop.index0 }}' action='{{ item.delete_action }}' method='POST'>
             <input type="hidden" name="xsrf_token" value="{{ item.delete_xsrf_token|escape }}">

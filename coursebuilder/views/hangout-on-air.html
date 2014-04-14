@@ -1,0 +1,61 @@
+{% extends 'base_course.html' %}
+
+{% block subtitle %}Team{% endblock subtitle %}
+
+{% block top_content %}{% endblock %}
+
+{% block main_content %}
+<div id="hangout-background">
+    
+    <div id="hangout-title">
+    	<h1>Hangout-On-Air</h1>
+    </div>
+    
+    <div id="hangout-intro">
+        <div id="hangout-img1" class="hangout-img"></div>
+        <div id="hangout-img2" class="hangout-img"></div>
+        <div id="hangout-img3" class="hangout-img"></div>
+        
+        <div class="hangout-txt" id="hangout-txt-1">
+        	<h3 id="hangout-txt1-header">Meet the Instructor</h3>
+            <p>Interact with Prof. Geoffrey Fox in real time about the entire course. The schedule for hangout-on-air with the instructor will be displayed below. Please see the instructions below.</p>
+        </div>
+        <div class="hangout-txt" id="hangout-txt-2">
+        	<h3 id="hangout-txt2-header">Ask your Questions</h3>
+            <p>You can submit your questions that  the instructor can choose to answer. It is important to point out that other viewers will have an option to vote on your question(s).</p>
+        </div>
+        <div class="hangout-txt" id="hangout-txt-3" >
+        	<h3 id="hangout-txt3-header">Meet Your Classmates</h3>
+            <p>Feel free to start a hangout-on-air or nomal google hangout with your classmates anytime u. Check <a href="http://www.google.com/+/learnmore/hangouts/" target="_blank">Google+ help</a> to see how it works. Also check out the <a href="https://plus.google.com/communities/100002091471057833120" target="_blank">Big Data Community Page on Google+.</a></p>
+        </div>
+    </div>
+    <div id="hangout-event">
+        <div id="hangout-current" class="hangout-event-element">
+            <h3 class="hangout-current-event hangout-current-evert-top">To be decided</h3>
+        </div>
+        <div id="hangout-upcoming" class="hangout-event-element" >
+            <h3 class="hangout-current-event hangout-current-evert-top">To be decided</h3>
+        </div>
+    </div>
+    <div id="hangout-instruction">
+        <div id="hangout-instruction-title"></div>
+        <div id="hangout-instruction-background">
+            <div id="hangout-instruction-step1" class="hangout-instruction-steps">
+                <p class="hangout-instruction-txt">Notification will be sent to your email and <a href="http://www.google.com/+/learnmore/hangouts/" title="Google+" target="_blank">Google+</a>. Check either of them and <span class="hangout-instruction-txt-highlight"> click “Yes” to join.</span></p>
+            </div>
+            <div id="hangout-instruction-img1" class="hangout-instruction-img"></div>
+        
+            <div id="hangout-instruction-step2" class="hangout-instruction-steps">
+                <p class="hangout-instruction-txt">When the event starts, go to the event page on google+ or click the link at the bottom of this page. 
+                <span class="hangout-instruction-txt-highlight">Click the Video on event page.</span></p>
+            </div>       
+            <div id="hangout-instruction-img2" class="hangout-instruction-img"></div>
+        
+            <div id="hangout-instruction-step3" class="hangout-instruction-steps">
+                <p class="hangout-instruction-txt"><span class="hangout-instruction-txt-highlight">Click the “Ask a new question”</span> to submit a question to the instructor.</p>
+            </div>
+            <div id="hangout-instruction-img3" class="hangout-instruction-img"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}

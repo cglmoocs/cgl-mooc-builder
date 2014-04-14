@@ -37,6 +37,11 @@ from modules.oeditor import oeditor
 
 from google.appengine.ext import db
 
+# CGL-MOOC-Builder starts:
+# Import mail for sending an email after an announcement was made
+from google.appengine.api import mail
+# CGL-MOOC-BUilder ends
+
 
 class AnnouncementsRights(object):
     """Manages view/edit rights for announcements."""
@@ -137,6 +142,15 @@ class AnnouncementsHandler(BaseHandler, ReflectiveRequestHandler):
             student = Student.get_enrolled_student_by_email(user.email())
             if not student:
                 transient_student = True
+            else:
+                # CGL-MOOC-Builder starts:
+                # Set template value for progress bar that shows on the top navigation(header.html)
+                total_progress = (self.get_progress_tracker().get_overall_progress_score(student))
+                self.template_value['progress_value'] = total_progress.get('progress_score', 0)
+                self.template_value['complete_value'] = total_progress.get('completed_score', 0)
+                self.template_value['percentage'] = total_progress.get('percentage', '')
+                # CGL-MOOC-Builder ends
+
         self.template_value['transient_student'] = transient_student
 
         items = AnnouncementEntity.get_announcements()
@@ -317,19 +331,45 @@ class AnnouncementsItemRESTHandler(BaseRESTHandler):
             AnnouncementsItemRESTHandler.SCHEMA_DICT))
         entity.put()
 
-        email_sent = False
-        if entity.send_email:
-            email_manager = notify.EmailManager(self.get_course())
-            email_sent = email_manager.send_announcement(
-                entity.title, entity.html)
+        # Google Course Builder starts:
+        #email_sent = False
+        #if entity.send_email:
+        #    email_manager = notify.EmailManager(self.get_course())
+        #    email_sent = email_manager.send_announcement(
+        #        entity.title, entity.html)
+        #if entity.send_email and not email_sent:
+        #    if not self.get_course().get_course_announcement_list_email():
+        #        message = 'Saved. Announcement list not configured.'
+        #    else:
+        #        message = 'Saved, but there was an error sending email.'
+        #else:
+        #    message = 'Saved.'
+        # Google Course Builder ends
 
-        if entity.send_email and not email_sent:
-            if not self.get_course().get_course_announcement_list_email():
-                message = 'Saved. Announcement list not configured.'
-            else:
-                message = 'Saved, but there was an error sending email.'
+        # CGL-MOOC-Builder starts:
+        # Send an email when an announcement was made
+        if entity.send_email and not entity.is_draft:
+            # get all students email
+            all_students = self.get_students()
+            email_list = []
+            recipient = ""
+            for s in all_students:
+                if s.is_enrolled and s.email != "test@example.com":
+                    recipient = s.name + "<" + s.email + ">"
+                    email_list.append(recipient)
+            # send an announcement email
+            sender_address = "Sender Name <user@example.com>"
+            user_address = email_list
+            subject = "Announcement: " + entity.title
+            body = ""
+            html = entity.html
+            mail.send_mail(sender_address, "user@example.com", subject, body, html=html, bcc=user_address)
+        if entity.send_email:
+            message = 'Saved and sent.'
         else:
             message = 'Saved.'
+        # CGL-MOOC-Builder ends
+
         transforms.send_json_response(self, 200, message)
 
 

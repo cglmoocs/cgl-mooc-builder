@@ -14,10 +14,7 @@
   {# I18N: Title of the webpage. #}
   - {{ gettext('Review') }}
 {% endblock subtitle %}
-
-{% block top_content %}
-{% endblock %}
-
+{% block top_content %}{% endblock %}
 {% block main_content %}
 
 {% if is_read_write_course and is_course_admin %}
@@ -30,7 +27,7 @@
 {% endif %}
 
 <div id="gcb-main">
-  <div class="gcb-article">
+  <div class="gcb-article" id="peerreview">
     {% if assessment_script_src %}
       <script src="{{ assessment_script_src }}"></script>
     {% endif %}
@@ -58,14 +55,17 @@
       {% if due_date_exceeded %}
         <strong>
           {# I18N: Text shown to students when they visit a review submission page for which the due date has passed. #}
+          [#
           {{ gettext('The due date for submitting this review has passed. It was due on %(review_due_date)s.', review_due_date=review_due_date) }}
+          #}
         </strong>
       {% else %}
         <strong>
           {# I18N: Shown to a student who is asked to complete a peer review of another student's assignment. #}
+          {#
           {{ gettext('Due date for this review: ') }}
+          #}
         </strong>
-        {{ review_due_date }}.
       {% endif %}
     </p>
 
@@ -83,7 +83,7 @@
       <h3>{{ gettext('Reviewed assignment') }}</h3>
     {% else %}
       {# I18N: Header text for an assignment that a student still needs to review. #}
-      <h3>{{ gettext('Assignment to review') }}</h3>
+      <h3 class="review-title-style">{{ gettext('Assignment to review') }}</h3>
     {% endif %}
 
     {% import 'readonly_assessment.html' as readonly_assessment %}
@@ -116,7 +116,7 @@
       </div>
     {% else %}
       {# I18N: Header text for a review form that a student has to complete when reviewing another student's assignment. #}
-      <h3>{{ gettext('Review form') }}</h3>
+      <h3 class="review-title-style">{{ gettext('Review form') }}</h3>
     {% endif %}
 
     <div style="width: 970px;" id="assessmentContents"></div>
@@ -128,8 +128,6 @@
             html_review_form, is_review_form=True, review_key=key)
       }}
     {% endif %}
-
   </div>
 </div>
-
 {% endblock %}

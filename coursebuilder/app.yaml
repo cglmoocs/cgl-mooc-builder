@@ -1,4 +1,4 @@
-application: mycourse  # FIXME: Replace this with your application id
+application: cgl-mooc-builder  # FIXME: Replace this with your application id
 version: 1
 runtime: python27
 api_version: 1
@@ -24,6 +24,14 @@ libraries:
   version: "1.2.3"
 
 handlers:
+# CGL-MOOC-Builder starts: cache assets to improve loading performance.
+# application_readable flag should be set to true if you want the local
+# assets folder to be readable by the application.
+# Refer to https://developers.google.com/appengine/docs/python/config/appconfig#Python_app_yaml_Static_file_handlers. 
+- url: /assets
+  static_dir: assets
+  application_readable: true
+# CGL-MOOC-Builder ends
 - url: /remote_api
   script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
   login: admin

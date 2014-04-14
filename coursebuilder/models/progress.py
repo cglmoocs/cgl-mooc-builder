@@ -808,6 +808,49 @@ class UnitLessonCompletionTracker(object):
         return self.is_component_completed(
             progress, unit_id, lesson_id, cpt_id) or 0
 
+    def get_overall_progress_score(self, student):
+        """ CGL-MOOC-Builder:
+            Returns a dict contains an overall progress score and its maximum possible score
+        """
+        if student.is_transient:
+            return {}
+        units = self._get_course().get_units()
+        progress = self.get_or_create_progress(student)
+
+        result = {}
+        completed_score = 0
+        progress_score = 0
+        a_completed_score = 0
+        a_progress_score = 0
+        u_completed_score = 0
+        u_progress_score = 0
+        for unit in units:
+            if unit.type == 'A':
+                a_completed_score += 2
+                score = self.is_assessment_completed(progress, unit.unit_id)
+                if score == True:
+                    a_progress_score += 2
+            elif unit.type == 'U':
+                u_completed_score += 2
+                score = self.get_unit_status(progress, unit.unit_id)
+                if score is not None:
+                    u_progress_score += score
+
+        if a_completed_score == 0 and u_completed_score == 0:
+            t = 100
+        elif a_completed_score == 0 and u_completed_score != 0:
+            t = float(u_progress_score) / u_completed_score * 100
+        elif a_completed_score != 0 and u_completed_score == 0:
+            t = float(a_progress_score) / a_completed_score * 100
+        else:
+            t = float(a_progress_score) / a_completed_score * 50 + float(u_progress_score) / u_completed_score * 50
+
+        result['progress_score'] = t
+        result['completed_score'] = 100
+        result['percentage'] = "{0:.0f}%".format(t)
+        # Return progress score
+        return result
+
     def _get_entity_value(self, progress, event_key):
         if not progress.value:
             return None

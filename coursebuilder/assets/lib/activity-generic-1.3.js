@@ -583,6 +583,10 @@ function renderAssessment(assessment, domRoot) {
         }
         curLI.append(textarea);
 
+        // CGL-MOOC-Builder starts: CKEditor
+        $("#q"+questionNum).ckeditor();
+        // CGL-MOOC-Builder ends
+
       } else {
         curLI.append('Answer:&nbsp;&nbsp;');
 

@@ -1,0 +1,52 @@
+{% extends 'base_course.html' %}
+
+{% block gcb_page_info %}
+  if ('gcbSetPageInfo' in window) {
+    gcbSetPageInfo({
+      'page_type': 'team',
+    });
+  }
+{% endblock %}
+
+{% block subtitle %}Team{% endblock subtitle %}
+{% block top_content %}{% endblock %}
+{% block main_content %}
+<div id="gcb-main">
+  <div class="gcb-article tab-content">
+    <div class="gcb-aside">
+	<div class="Team-Background">
+		 <h1 class="Team-TheTeam">The Team</h1>
+         <div class="horizontalLine"></div>
+         
+         <div class="Team-Member">
+         <h2 class="Team-Name"> Geoffrey Fox</h2>
+         <h3 class="Team-Title">Instructor</h3>
+         <div class="Team-img"><img src="/assets/img/Geoffrey.jpg" /></div>
+         <div class="Team-Bio">Geoffrey Fox received a PhD in Theoretical Physics from Cambridge University and is now Professor of Informatics and Computing as well as Physics at Indiana University, where he is director of the Digital Science Center and Associate Dean for Research and Graduate Studies at the School of Informatics and Computing. He previously held positions at Caltech, Syracuse University and Florida State University. He has published around 1,000 papers in Physics and Computer Science, supervised the PhD candidacies of 62 students, and received an h-index of 67 along with over 23000 citations.Professor Fox currently works in applying Computer Science to Bioinformatics, Sensor Clouds, Earthquake and Ice-sheet Science, and Particle Physics. He is principal investigator of FutureGrid – a facility to enable development of new approaches to computing. He is involved in several projects, including the eHumanity portal, to enhance the capability of Minority Serving Institutions. A Fellow of APS and ACM, he has experience in online education and its use in MOOCs for areas like Data and Computational Science.</div>
+         </div>
+         
+         <div class="Team-Member">
+         <h2 class="Team-Name"> Sidd Maini</h2>
+         <h3 class="Team-Title">UX/Project Manager</h3>
+         <div class="Team-img"><img src="/assets/img/Team-Sidd.jpg" /></div>
+         <div class="Team-Bio">Sidd Maini works as a Senior HCI Designer and Engineer at the Community Grids Lab  of the <a href="http://pti.iu.edu" title="Pervasive Technology Institute" target="_blank">Pervasive Technology Institute</a>. He has worked on projects such as FutureGrid and QuakeSim. He was part of a team with Josh Rosen and Marlon Pierce that developed an Audio-Video collaboration tool called AVATS that was used for broadcasting the entire <a href="http://escience2008.iu.edu/" title="4th IEEE International Conference on e-Science 2008" target="_blank">e-Science 2008</a> conference to audiences around the world. He currently manages and leads projects while wearing different hats - developer, designer, or a system administrator. His latest projects include <a href="http://e-humanity.org" title="e-Humanity" target="_blank">e-Humanity</a> and the <a href="https://bigdatacourse.appspot.com" title="Big Data Applications and Analytics MOOC" target="_blank">Big Data MOOC</a>. He earned his first MS degree in Information Architecture and Knowledge Management from the <a href="http://iakm.kent.edu/" title="IAKM Master's Program" target="_blank">Kent State University</a> and a second MS degree in Human Computer Interaction from the <a href="http://www.soic.indiana.edu/graduate/programs/hcid/" title="HCI Master's Program at IUB" target="_blank">Indiana University</a>. He also holds a Computer Engineering degree from the <a href="http://www.unipune.ac.in/" title="University of Pune" target="_blank">University of Pune, India</a>. In his free time, he enjoys cooking, dancing, and watching movies.</div>
+         </div>
+         
+         <div class="Team-Member">
+         <h2 class="Team-Name"> Eric Tsao</h2>
+         <h3 class="Team-Title">Web Developer</h3>
+         <div class="Team-img"><img src="/assets/img/Team-Eric.jpg" /></div>
+         <div class="Team-Bio">Eric works as a Web Developer at the Community Grids Lab since May 2011. He earned his BS from University of Minnesota and his MS in Computer Science from Indiana University. He specializes in back-end development, but often finds himself enjoy coding in HTML/CSS, JavaScript and jQuery. His works include <a href="http://e-humanity.org" title="e-Humanity" target="_blank">e-Humanity</a> and the <a href="https://bigdatacourse.appspot.com" title="Big Data Applications and Analytics MOOC" target="_blank">Big Data MOOC</a>. When Eric is not attached to his computer, he enjoys hiking, photography and playing ultimate frisbee!</div>
+         </div>
+         
+         <div class="Team-Member">
+         <h2 class="Team-Name">Yishi Yang</h2>
+         <h3 class="Team-Title">UX/Interaction Designer</h3>
+         <div class="Team-img"><img src="/assets/img/Team-Yishi.jpg" /></div>
+         <div class="Team-Bio">Yishi Yang is a Interaction/UX designer. Currently he is a second year master student in HCI/d Program at Indiana Univerisity Bloomington.He holds a computer science bachler's degree (from Beijing Jiaotong University, China). His role in this team is a designer, a front-end developer and a video editor. He is interested in user experience and interaction design, espeically design of physical computing and internet of things in everyday situation. You can find more of his work at <a href="http://yishiyang.info" title="yishiyang's portfolio" target="_blank">his portfolio</a>.</div>
+         </div>
+       </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

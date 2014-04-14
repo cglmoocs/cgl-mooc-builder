@@ -198,6 +198,13 @@ class AnswerHandler(BaseHandler):
                     'reviewdashboard?unit=%s' % unit.unit_id
                 )
 
+            # CGL-MOOC-Builder starts:
+            # Set template value for students progress bar that shows on the top navigation
+            total_progress = (self.get_progress_tracker().get_overall_progress_score(student))
+            self.template_value['progress_value'] = total_progress.get('progress_score', 0)
+            self.template_value['complete_value'] = total_progress.get('completed_score', 0)
+            self.template_value['percentage'] = total_progress.get('percentage', '')
+            # CGL-MOOC-Builder ends
             self.render('reviewed_assessment_confirmation.html')
             return
         else:
@@ -216,4 +223,11 @@ class AnswerHandler(BaseHandler):
             self.template_value['overall_score'] = course.get_overall_score(
                 student)
 
+            # CGL-MOOC-Builder starts:
+            # Set template value for students progress bar that shows on the top navigation
+            total_progress = (self.get_progress_tracker().get_overall_progress_score(student))
+            self.template_value['progress_value'] = total_progress.get('progress_score', 0)
+            self.template_value['complete_value'] = total_progress.get('completed_score', 0)
+            self.template_value['percentage'] = total_progress.get('percentage', '')
+            # CGL-MOOC-Builder ends
             self.render('test_confirmation.html')

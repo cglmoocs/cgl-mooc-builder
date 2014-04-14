@@ -1,0 +1,83 @@
+{% extends 'base_course.html' %}
+
+{% block gcb_page_info %}
+  if ('gcbSetPageInfo' in window) {
+    gcbSetPageInfo({
+      'page_type': 'course',
+    });
+  }
+{% endblock %}
+
+{% block top_content %}
+<script>
+	{# I18N: This is shown to the student in a popup after registration. #}
+	var regConfirmationMsg = "{{ gettext('Thank you for registering for the course. Click the Announcements tab for important information.') }}";
+	if(window.location.hash == '#registration_confirmation') {
+		cbShowMsg(regConfirmationMsg);
+		setTimeout(function() {cbHideMsg();}, 20000);
+	}
+	{# I18N: This is shown to the student in a popup if registrations for the course are not open. #}
+	var regClosedMsg = "{{ gettext('Registrations for this course are not open.') }}";
+	if(window.location.hash == '#registration_closed') {
+		cbShowMsg(regClosedMsg);
+		setTimeout(function() {cbHideMsg();}, 20000);
+	}
+</script>
+
+<div class="gcb-cols banner">
+	{% include 'banner.html' %}
+</div>
+
+<div class="gcb-cols">
+    {% include 'summary.html' %}
+    {% include 'instructor.html' %}
+</div>
+
+<div class="gcb-cols syllabus">
+	<h2><a href="https://www.dropbox.com/s/70zjo4jgl808mg1/Big_Data_Syllabus.pdf" title="Course Syllabus" target="_blank">Course Syllabus</a> (<a href="https://www.dropbox.com/s/70zjo4jgl808mg1/Big_Data_Syllabus.pdf" title="Course Syllabus" target="_blank">PDF</a>)</h2>
+    <div class="syllabus-image"><img src="/assets/img/syllabus.png" /></div>
+</div>
+
+<script>
+$(function() {
+	/* accordion http://api.jqueryui.com/accordion/ */
+	$(".accordion").accordion({
+		active: false ,
+		collapsible: true,
+		icons: { "header": "ui-icon-plus ui-icon-large", "activeHeader": "ui-icon-minus ui-icon-large" },
+		heightStyle: "content",
+		disabled: false,
+		clearStyle: true,
+		header: 'div.accordion-section'
+	});
+	$( ".accordion-content" ).accordion({
+		active: true ,
+		collapsible: true,
+		icons: { "header": "ui-icon-plus ui-icon-large", "activeHeader": "ui-icon-minus ui-icon-large" },
+		heightStyle: "content",
+		disabled: false,
+		clearStyle: true,
+		header: 'span:not(.this-is-a-homework)'
+	});
+	
+	/* disable accordion from opening when click on the link */
+	$(".accordion-content a, .accordion a").click(function() {
+		window.location = $(this).attr('href');
+		return false;
+	});	
+});
+/* set height for antiscroll */
+$(".box2").each(function(index) {
+	var h = $(this).parent().parent().parent().parent().height();
+	$(this).height(h - 28);
+	$(this).children(".antiscroll-inner").height(h - 28);
+});
+/* OS X Lion style cross-browser native scrolling: https://github.com/LearnBoost/antiscroll */
+$(".antiscroll-wrap").antiscroll({autoHide: false});
+$(".each-lesson-description").hide();
+$(".each-lesson-description:first-of-type").show();
+</script>
+
+{% endblock %}
+
+{% block main_content %}{% endblock %}

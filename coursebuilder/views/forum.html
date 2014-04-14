@@ -1,13 +1,5 @@
 {% extends 'base_course.html' %}
 
-{% block gcb_page_info %}
-  if ('gcbSetPageInfo' in window) {
-    gcbSetPageInfo({
-      'page_type': 'forum',
-    });
-  }
-{% endblock %}
-
 {% block subtitle %}
   {# I18N: Title of the webpage. #}
   - {{ gettext('Forum') }}

@@ -39,6 +39,14 @@ from models.roles import Roles
 from google.appengine.api import namespace_manager
 from google.appengine.api import users
 
+# CGL-MOOC-Builder starts:
+# Import mail for sending emails when users enroll
+from google.appengine.api import mail
+
+# Import groupby for grouping units by section_id
+from itertools import groupby
+# CGL-MOOC-Builder ends
+
 # The name of the template dict key that stores a course's base location.
 COURSE_BASE_KEY = 'gcb_course_base'
 
@@ -274,9 +282,27 @@ class BaseHandler(ApplicationHandler):
         """Gets all units in the course."""
         return self.get_course().get_units()
 
+    def get_units_groupby_section(self):
+        """ CGL-MOOC-Builder: Gets all units in the course and groupby section_id"""
+        sorted_units = sorted(
+            self.get_course().get_units(), key = lambda x: int(x.section_id or 0))
+        groups = []
+        keys = []
+        for k, g in groupby(sorted_units, key = lambda x: int(x.section_id or 0)):
+            groups.append(list(g))
+            keys.append(k)
+
+        return groups
+
     def get_lessons(self, unit_id):
         """Gets all lessons (in order) in the specific course unit."""
         return self.get_course().get_lessons(unit_id)
+
+    def get_all_lesson(self, unit_id):
+        """CGL-MOOC-Builder:
+        Gets all lessons in the specific course unit else return None"""
+        lessons = self.get_course().get_lessons(unit_id)
+        return lessons if lessons else None
 
     def get_progress_tracker(self):
         """Gets the progress tracker for the course."""
@@ -412,7 +438,7 @@ class PreviewHandler(BaseHandler):
         self.template_value['can_register'] = self.app_context.get_environ(
             )['reg_form']['can_register']
         self.template_value['navbar'] = {'course': True}
-        self.template_value['units'] = self.get_units()
+        self.template_value['units'] = sorted(self.get_units(), key = lambda x: int(x.section_id or 999))
         self.template_value['show_registration_page'] = True
 
         course = self.app_context.get_environ()['course']
@@ -424,6 +450,15 @@ class PreviewHandler(BaseHandler):
             'main_image' in course and
             'url' in course['main_image'] and
             course['main_image']['url'])
+
+        # CGL-MOOC-Builder starts:
+        # Set template value for all lessons in course_structure_preview.html
+        all_lessons = {}
+        for u in self.template_value['units']:
+            if u.type == 'U':
+                all_lessons[u.unit_id] = self.get_all_lesson(u.unit_id)
+        self.template_value['all_lessons'] = all_lessons
+        # CGL-MOOC-Builder ends
 
         if user:
             profile = StudentProfileDAO.get_profile_by_user_id(user.user_id())
@@ -496,23 +531,89 @@ class RegisterHandler(BaseHandler):
 
         Student.add_new_student_for_current_user(
             name, transforms.dumps(self.request.POST.items()))
+
+        # CGL-MOOC-Builder starts:
+        # Send an notification email after registration
+        sender_address = "User Name <user@example.com>"
+        user_address = name + " <" + user.email() + ">"
+        subject = "Welcome to the CGL-MOOC-Builder Online Course"
+        body = "Dear " + name + ", Example HTML content"
+        html = "<div style='background-color: #999999; color: #ffffff; padding: 0px 20px 20px 20px; font-family: 'Verdana', sans-serif;'> <div style='width: 500px; margin: 0 auto;'> <p style='background-color: #093359; height: 100px; margin: 0px; padding: 0px;'> <img src='http://cloudmooc.pti.indiana.edu:8080/assets/img/Logo.png'></img> </p> <div style='background-color: #CCC; color: black; padding: 15px;'> <p>Welcome " + name + ",</p> <p>Thank you for enrolling in <a href='https://bigdatacoursespring2014.appspot.com' title='Big Data Applications and Analytics Course Sptring 2014' target='_blank' style='color: #003366; '>Big Data Applications and Analytics Course - Spring 2014</a>. This course will take you on a journey to learn great things about Big Data and its case studies.</p><p>Go to the home page for downloading the entire syllabus, slides, and the entire course material</p><p>Get Ready!<br> Geoffrey Fox and the Big Data Course Team</p> <p>Go to the <a href='https://bigdatacoursespring2014.appspot.com' title='Big Data Applications and Analytics Course Spring 2014' target='_blank' style='color: #093359;'>Course</a></p> <p>Share this course with your friends!</p> </div> <p style='background-color: #012256; height: 50px; margin: 0px; padding: 0px;'></p></div></div>"
+        mail.send_mail(sender_address, user_address, subject, body, html=html)
+        # CGL-MOOC-Builder ends
+
         # Render registration confirmation page
         self.redirect('/course#registration_confirmation')
 
-
 class ForumHandler(BaseHandler):
-    """Handler for forum page."""
+    """CGL-MOOC-Builder: Handler for forum page."""
 
     def get(self):
         """Handles GET requests."""
-        student = self.personalize_page_and_get_enrolled(
-            supports_transient_student=True)
-        if not student:
-            return
+        user = self.personalize_page_and_get_user()
+        transient_student = False
+        if user is None:
+            transient_student = True
+        else:
+            student = Student.get_enrolled_student_by_email(user.email())
+            if not student:
+                transient_student = True
+            else:
+                # Set template value for progress bar that shows on the top navigation(header.html)
+                total_progress = (self.get_progress_tracker().get_overall_progress_score(student))
+                self.template_value['progress_value'] = total_progress.get('progress_score', 0)
+                self.template_value['complete_value'] = total_progress.get('completed_score', 0)
+                self.template_value['percentage'] = total_progress.get('percentage', '')
 
         self.template_value['navbar'] = {'forum': True}
         self.render('forum.html')
 
+class FAQHandler(BaseHandler):
+    """CGL-MOOC-Builder: Handler for faq page."""
+
+    def get(self):
+        user = self.personalize_page_and_get_user()
+        transient_student = False
+        if user is None:
+            transient_student = True
+        else:
+            student = Student.get_enrolled_student_by_email(user.email())
+            if not student:
+                transient_student = True
+            else:
+                # Set template value for progress bar that shows on the top navigation(header.html)
+                total_progress = (self.get_progress_tracker().get_overall_progress_score(student))
+                self.template_value['progress_value'] = total_progress.get('progress_score', 0)
+                self.template_value['complete_value'] = total_progress.get('completed_score', 0)
+                self.template_value['percentage'] = total_progress.get('percentage', '')
+
+        self.template_value['transient_student'] = transient_student
+        self.template_value['navbar'] = {'faq': True}
+        self.render('faq.html')
+
+class TeamHandler(BaseHandler):
+    """CGL-MOOC-Builder: Handler for team page."""
+
+    def get(self):
+        """Handles GET requests."""
+        user = self.personalize_page_and_get_user()
+        transient_student = False
+        if user is None:
+            transient_student = True
+        else:
+            student = Student.get_enrolled_student_by_email(user.email())
+            if not student:
+                transient_student = True
+            else:
+                # Set template value for progress bar that shows on the top navigation(header.html)
+                total_progress = (self.get_progress_tracker().get_overall_progress_score(student))
+                self.template_value['progress_value'] = total_progress.get('progress_score', 0)
+                self.template_value['complete_value'] = total_progress.get('completed_score', 0)
+                self.template_value['percentage'] = total_progress.get('percentage', '')
+
+        self.template_value['transient_student'] = transient_student
+        self.template_value['navbar'] = {'team': True}
+        self.render('team.html')
 
 class StudentProfileHandler(BaseHandler):
     """Handles the click to 'Progress' link in the nav bar."""
@@ -525,6 +626,15 @@ class StudentProfileHandler(BaseHandler):
 
         course = self.get_course()
         name = student.name
+
+        # CGL-MOOC-Builder starts:
+        # Set template value of additional data fields for a student in student_data_table.html
+        self.template_value['student_age'] = student.age
+        self.template_value['student_profession'] = student.profession
+        self.template_value['student_education'] = student.education
+        self.template_value['student_motivation'] = student.motivation
+        # CGL-MOOC-Builder ends
+
         profile = student.profile
         if profile:
             name = profile.nick_name
@@ -540,6 +650,27 @@ class StudentProfileHandler(BaseHandler):
             XsrfTokenManager.create_xsrf_token('student-edit'))
         self.template_value['can_edit_name'] = (
             not models.CAN_SHARE_STUDENT_PROFILE.value)
+
+        # CGL-MOOC-Builder starts:
+        # Set template value for is_completed in student_data_table.html
+        is_completed = True
+        for s in self.template_value['score_list']:
+            if not s['completed']:
+                is_completed = False
+                break
+        total_progress = (self.get_progress_tracker().get_overall_progress_score(student))
+        progress_score = total_progress.get('progress_score', 0)
+        completed_score = total_progress.get('completed_score', 0)
+        if progress_score != 100:
+            is_completed = False
+        self.template_value['is_completed'] = is_completed
+
+        # Set template value for progress bar that shows on the top navigation(header.html)
+        self.template_value['progress_value'] = progress_score
+        self.template_value['complete_value'] = completed_score
+        self.template_value['percentage'] = total_progress.get('percentage', '')
+        # CGL-MOOC-Builder ends
+
         self.render('student_profile.html')
 
 

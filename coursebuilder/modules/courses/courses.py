@@ -34,6 +34,7 @@ def register_module():
     verify.parse_content = content.parse_string_in_scope
 
     # setup routes
+    # CGL-MOOC-Builder additional routes: team, faq and home
     courses_routes = [
         ('/', lessons.CourseHandler),
         ('/activity', lessons.ActivityHandler),
@@ -48,7 +49,10 @@ def register_module():
         ('/student/editstudent', utils.StudentEditStudentHandler),
         ('/student/home', utils.StudentProfileHandler),
         ('/student/unenroll', utils.StudentUnenrollHandler),
-        ('/unit', lessons.UnitHandler)]
+        ('/unit', lessons.UnitHandler),
+        ('/team', utils.TeamHandler),
+        ('/faq', utils.FAQHandler),
+        ('/home', lessons.HomeHandler)]
 
     global custom_module
     custom_module = custom_modules.Module(

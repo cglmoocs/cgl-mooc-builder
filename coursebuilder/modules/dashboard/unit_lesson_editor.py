@@ -41,6 +41,8 @@ from models import transforms
 from modules.oeditor import oeditor
 from tools import verify
 
+# CGL-MOOC-Builder
+from itertools import groupby
 
 DRAFT_TEXT = 'Private'
 PUBLISHED_TEXT = 'Public'
@@ -167,6 +169,14 @@ class UnitLessonEditor(ApplicationHandler):
         else:
             self.redirect('/dashboard')
 
+    def post_add_section(self):
+        """CGL-MOOC-Builder: adds new section to a course"""
+        course = courses.Course(self)
+        unit = course.add_section()
+        course.save()
+        self.redirect(self.get_action_url(
+            'edit_section', key=unit.unit_id, extra_args={'is_newly_created': 1}))
+
     def post_add_unit(self):
         """Adds new unit to a course."""
         course = courses.Course(self)
@@ -235,10 +245,25 @@ class UnitLessonEditor(ApplicationHandler):
         template_values['main_content'] = form_html
         self.render_page(template_values)
 
+    def get_edit_section(self):
+        """CGL-MOOC-Builder:
+           Shows section editor(similar to unit editor)"""
+        self._render_edit_form_for(
+            SectionRESTHandler, 'Section',
+            annotations_dict=SectionRESTHandler.get_schema_annotations_dict(
+                courses.Course(self).get_units()),
+            page_description=messages.UNIT_EDITOR_DESCRIPTION)
+
+
     def get_edit_unit(self):
-        """Shows unit editor."""
+        """CGL-MOOC-Builder modified: Shows unit editor."""
+        #self._render_edit_form_for(
+        #    UnitRESTHandler, 'Unit',
+        #    page_description=messages.UNIT_EDITOR_DESCRIPTION)
         self._render_edit_form_for(
             UnitRESTHandler, 'Unit',
+            annotations_dict=UnitRESTHandler.get_schema_annotations_dict(
+                courses.Course(self).get_units()),
             page_description=messages.UNIT_EDITOR_DESCRIPTION)
 
     def get_edit_link(self):
@@ -330,9 +355,16 @@ class CommonUnitRESTHandler(BaseRESTHandler):
         self.apply_updates(unit, updated_unit_dict, errors)
         if not errors:
             course = courses.Course(self)
-            assert course.update_unit(unit)
-            course.save()
-            transforms.send_json_response(self, 200, 'Saved.')
+            
+            if updated_unit_dict.has_key('section_title'):
+                assert course.update_section(unit)
+                course.save()
+                transforms.send_json_response(self, 200, 'Section Saved.')
+            else:
+                assert course.update_unit(unit)
+                course.save()
+                transforms.send_json_response(self, 200, 'Saved.')
+
         else:
             transforms.send_json_response(self, 412, '\n'.join(errors))
 
@@ -362,10 +394,10 @@ class CommonUnitRESTHandler(BaseRESTHandler):
         transforms.send_json_response(self, 200, 'Deleted.')
 
 
-class UnitRESTHandler(CommonUnitRESTHandler):
-    """Provides REST API to unit."""
+class SectionRESTHandler(CommonUnitRESTHandler):
+    """CGL-MOOC-Builder: Provides REST API to unit(section)."""
 
-    URI = '/rest/course/unit'
+    URI = '/rest/course/section'
 
     SCHEMA_JSON = """
     {
@@ -375,37 +407,220 @@ class UnitRESTHandler(CommonUnitRESTHandler):
         "properties": {
             "key" : {"type": "string"},
             "type": {"type": "string"},
-            "title": {"optional": true, "type": "string"},
-            "is_draft": {"type": "boolean"}
+            "is_draft": {"type": "boolean"},
+            "section_id": {"type":"string"},
+            "section_title": {"type":"string"},
+            "section_img": {"type":"string", "optional": true},
+            "section_time": {"type":"string", "optional": true},
+            "section_overview": {"type":"string", "format":"text", "optional": true}
             }
     }
     """
 
     SCHEMA_DICT = transforms.loads(SCHEMA_JSON)
 
-    SCHEMA_ANNOTATIONS_DICT = [
-        (['title'], 'Unit'),
-        (['properties', 'key', '_inputex'], {
-            'label': 'ID', '_type': 'uneditable'}),
-        (['properties', 'type', '_inputex'], {
-            'label': 'Type', '_type': 'uneditable'}),
-        (['properties', 'title', '_inputex'], {'label': 'Title'}),
-        STATUS_ANNOTATION]
-
+    # CGL-MOOC-Builder: adds inputex-textarea and inputex-integer
     REQUIRED_MODULES = [
-        'inputex-string', 'inputex-select', 'inputex-uneditable']
+        'inputex-string', 'inputex-select',
+        'inputex-uneditable', 'inputex-textarea', 'inputex-integer']
+
+    @classmethod
+    def get_schema_annotations_dict(cls, units):
+        """CGL-MOOC-Builder:"""
+        return [
+            (['title'], 'Section'),
+            (['properties', 'key', '_inputex'], {
+                'label': 'ID', '_type': 'uneditable'}),
+            (['properties', 'type', '_inputex'], {
+                'label': 'Type', '_type': 'uneditable'}),
+            (['properties', 'section_id', '_inputex'], {
+                'label': 'Section ID', '_type': 'uneditable'}),
+            (['properties', 'section_title', '_inputex'], {'label': 'Section Title'}),
+            (['properties', 'section_img', '_inputex'], {'label': 'Section Img'}),
+            (['properties', 'section_time', '_inputex'], {'label': 'Section Time'}),
+            (['properties', 'section_overview', '_inputex'], {'label': 'Section Overview'}),
+            STATUS_ANNOTATION]
 
     def unit_to_dict(self, unit):
         assert unit.type == 'U'
+
+        return {
+            'key': unit.unit_id,
+            'type': verify.UNIT_TYPE_NAMES[unit.type],
+            'is_draft': not unit.now_available,
+            'section_id': unit.section_id,
+            'section_title': unit.section_title,
+            'section_img': unit.section_img,
+            'section_time': unit.section_time,
+            'section_overview': unit.section_overview}
+
+    def apply_updates(self, unit, updated_unit_dict, unused_errors):
+        unit.now_available = not updated_unit_dict.get('is_draft')
+        # CGL-MOOC-Builder starts: with additional data fields
+        unit.section_overview = updated_unit_dict.get('section_overview')
+        unit.section_id = updated_unit_dict.get('section_id')
+        unit.section_title = updated_unit_dict.get('section_title')
+        unit.section_img = updated_unit_dict.get('section_img')
+        unit.section_time = updated_unit_dict.get('section_time')
+        # CGL-MOOC-Builder ends.
+
+
+class UnitRESTHandler(CommonUnitRESTHandler):
+    """Provides REST API to unit."""
+
+    URI = '/rest/course/unit'
+
+    # Google Course Builder starts:
+    #SCHEMA_JSON = """
+    #{
+    #    "id": "Unit Entity",
+    #    "type": "object",
+    #    "description": "Unit",
+    #    "properties": {
+    #        "key" : {"type": "string"},
+    #        "type": {"type": "string"},
+    #        "title": {"optional": true, "type": "string"},
+    #        "is_draft": {"type": "boolean"}
+    #        }
+    #}
+    #"""
+    # Google Course Builder ends.
+
+    # CGL-MOOC-Builder starts: with addition data fields
+    SCHEMA_JSON = """
+    {
+        "id": "Unit Entity",
+        "type": "object",
+        "description": "Unit",
+        "properties": {
+            "key" : {"type": "string"},
+            "type": {"type": "string"},
+            "title": {"optional": true, "type": "string"},
+            "is_draft": {"type": "boolean"},
+            "coding": {"type": "string", "optional": true},
+            "resources": {"type":"string", "format":"text", "optional": true},
+            "files": {"type":"string", "format":"text", "optional": true},
+            "overview": {"type":"string", "format":"text", "optional": true},
+            "total_time": {"type":"string", "optional": true},
+            "playlist": {"type":"string", "optional": true},
+            "google_community": {"type":"string", "optional": true},
+            "section_id": {"type":"string"}
+            }
+    }
+    """
+    # CGL-MOOC-Builder ends.
+
+    SCHEMA_DICT = transforms.loads(SCHEMA_JSON)
+
+    # Google Course Builder starts:
+    #SCHEMA_ANNOTATIONS_DICT = [
+    #    (['title'], 'Unit'),
+    #    (['properties', 'key', '_inputex'], {
+    #        'label': 'ID', '_type': 'uneditable'}),
+    #    (['properties', 'type', '_inputex'], {
+    #        'label': 'Type', '_type': 'uneditable'}),
+    #    (['properties', 'title', '_inputex'], {'label': 'Title'}),
+    #    STATUS_ANNOTATION]
+    # Google Course Builder ends.
+
+
+    # CGL-MOOC-Builder: adds inputex-textarea and inputex-integer
+    REQUIRED_MODULES = [
+        'inputex-string', 'inputex-select',
+        'inputex-uneditable', 'inputex-textarea', 'inputex-integer']
+
+    @classmethod
+    def get_schema_annotations_dict(cls, units):
+        """CGL-MOOC-Builder:
+           Originally there wasn't a get_schema_annotations_dict function
+           in UnitRESTHandler(but it does for the LessonRESTHandler).
+           This function was created so that we can get the section ids
+           from the units.
+        """
+        # CGL-MOOC-Builder: constructs section_list
+        section_list = []
+        sorted_units = sorted(units, key = lambda x: int(x.section_id or 0))
+        groups = []
+        keys = []
+        for k, g in groupby(sorted_units, key = lambda x: int(x.section_id or 0)):
+            groups.append(list(g))
+            keys.append(k)
+        for g in groups:
+            section_list.append({
+                'label': cgi.escape(
+                    'Section %s - %s ' % (g[0].section_id, g[0].section_title)),
+                'value': g[0].section_id})
+
+        return [
+            (['title'], 'Unit'),
+            (['properties', 'key', '_inputex'], {
+                'label': 'ID', '_type': 'uneditable'}),
+            (['properties', 'type', '_inputex'], {
+                'label': 'Type', '_type': 'uneditable'}),
+            (['properties', 'title', '_inputex'], {'label': 'Title'}),
+            (['properties', 'coding', '_inputex'], {'label': 'Coding'}),
+            (['properties', 'resources', '_inputex'], {'label': 'Resources'}),
+            (['properties', 'files', '_inputex'], {'label': 'Files'}),
+            (['properties', 'overview', '_inputex'], {'label': 'Overview'}),
+            (['properties', 'total_time', '_inputex'], {'label': 'Total Time'}),
+            (['properties', 'playlist', '_inputex'], {'label': 'Playlist'}),
+            (['properties', 'google_community', '_inputex'], {'label': 'Google Community ID'}),
+            (['properties', 'section_id', '_inputex'], {
+                'label': 'Section ID', '_type': 'select', 'choices': section_list}),
+            #(['properties', 'section_title', '_inputex'], {'label': 'Section Title'}),
+            #(['properties', 'section_img', '_inputex'], {'label': 'Section Img'}),
+            #(['properties', 'section_time', '_inputex'], {'label': 'Section Time'}),
+            #(['properties', 'section_overview', '_inputex'], {'label': 'Section Overview'}),
+            STATUS_ANNOTATION]
+
+    def unit_to_dict(self, unit):
+        assert unit.type == 'U'
+        # Google Course Builder starts:
+        #return {
+        #    'key': unit.unit_id,
+        #    'type': verify.UNIT_TYPE_NAMES[unit.type],
+        #    'title': unit.title,
+        #    'is_draft': not unit.now_available}
+        # Google Course Builder ends.
+
+        # CGL-MOOC-Builder starts: with additional data fields
         return {
             'key': unit.unit_id,
             'type': verify.UNIT_TYPE_NAMES[unit.type],
             'title': unit.title,
-            'is_draft': not unit.now_available}
+            'is_draft': not unit.now_available,
+            'coding': unit.coding,
+            'resources': unit.resources,
+            'files': unit.files,
+            'overview': unit.overview,
+            'total_time': unit.total_time,
+            'playlist': unit.playlist,
+            'google_community': unit.google_community,
+            'section_id': unit.section_id}
+            #'section_title': unit.section_title,
+            #'section_img': unit.section_img,
+            #'section_time': unit.section_time,
+            #'section_overview': unit.section_overview}
+        # CGL-MOOC-Builder ends.
 
     def apply_updates(self, unit, updated_unit_dict, unused_errors):
         unit.title = updated_unit_dict.get('title')
         unit.now_available = not updated_unit_dict.get('is_draft')
+        # CGL-MOOC-Builder starts: with additional data fields
+        unit.coding = updated_unit_dict.get('coding')
+        unit.resources = updated_unit_dict.get('resources')
+        unit.files = updated_unit_dict.get('files')
+        unit.overview = updated_unit_dict.get('overview')
+        unit.total_time = updated_unit_dict.get('total_time')
+        unit.playlist = updated_unit_dict.get('playlist')
+        unit.google_community = updated_unit_dict.get('google_community')
+
+        unit.section_id = updated_unit_dict.get('section_id')
+        #unit.section_overview = updated_unit_dict.get('section_overview')
+        #unit.section_title = updated_unit_dict.get('section_title')
+        #unit.section_img = updated_unit_dict.get('section_img')
+        #unit.section_time = updated_unit_dict.get('section_time')
+        # CGL-MOOC-Builder ends.
 
 
 class LinkRESTHandler(CommonUnitRESTHandler):
@@ -861,7 +1076,12 @@ class UnitLessonTitleRESTHandler(BaseRESTHandler):
 
         course = courses.Course(self)
         outline_data = []
-        for unit in course.get_units():
+        # CGL-MOOC-Builder: sort units by section id
+        sorted_units = sorted(
+            course.get_units(), key = lambda x: int(x.section_id or 0))
+        # CGL-MOOC-Builder:
+        # Iterate through sorted_units instead of course.get_units()
+        for unit in sorted_units:
             lesson_data = []
             for lesson in course.get_lessons(unit.unit_id):
                 lesson_data.append({

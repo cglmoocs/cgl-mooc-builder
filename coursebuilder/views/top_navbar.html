@@ -1,0 +1,82 @@
+<div class="gcb-nav gcb-complex" id="gcb-nav-x">
+    <div class="gcb-aux">
+      <ul id="topnav">
+        <!--Course, Announcements, Forum, My Courses, Profile, Communities-->
+        {{course_info.base.after_navbar_begins | safe}}
+         <li {% if navbar.course %}class='active'{% endif %}>
+          {# I18N: Navbar tab. #}
+          <a href="home" id="home-icon"><img src="../assets/img/home.png"/></a>
+        </li>
+        <li {% if navbar.course %}class='active'{% endif %}>
+          {# I18N: Navbar tab. #}
+          <a href="course" class="myButton">Course</a>
+        </li>
+        <li>
+          <a href="https://plus.google.com/u/0/communities/100002091471057833120" target="_blank" class="myButton">Join Discussion</a>
+        </li>
+        {% if course_info.course.forum_embed_url %}
+          <li {% if navbar.forum %}class='active'{% endif %}>
+            {# I18N: Navbar tab. #}
+            <a href="forum" class="myButton">{{ gettext('Forum') }}</a>
+          </li>
+        {% endif %}
+        {% if show_course_explorer_tab and logoutUrl %}
+          <li class="gcb-pull-right">
+            {# I18N: Navbar tab. #}
+            <a href="/explorer/courses" class="myButton">{{ gettext('My Courses') }}</a>
+          </li>
+          {% if has_global_profile %}
+            <li class="gcb-pull-right">
+              {# I18N: Navbar tab. #}
+              <a href="/explorer/profile" class="myButton">{{ gettext('Profile') }}</a>
+            </li>
+          {% endif %}
+        {% endif %}
+        
+        <!-- Profile, Enroll -->
+        {% if not transient_student %}
+          <li {% if navbar.progress %}class='active gcb-pull-right' {% else %}class='gcb-pull-right' {% endif %}>
+            {# I18N: Navbar tab. #}
+            <a href="student/home" class="myButton">Profile</a>
+          </li>
+        {% else %}
+          <li {% if navbar.registration %}class='active gcb-pull-right'{% else %}class='gcb-pull-right'{% endif %}>
+            {# I18N: Navbar tab. #}
+            <a href="register" class="myButton">Enroll</a>
+          </li>
+        {% endif %}
+        
+         <!-- (Not registered, Login, Logout)-->
+        {% if logoutUrl %}
+        <li class="gcb-pull-right">
+          <span class="profile_email">{{ email }}</span>
+          {% if transient_student and can_register %}
+            ({{ gettext('Not registered') }})
+          {% endif %}
+          &nbsp;|&nbsp;
+          <a href="{{ logoutUrl }}" style="text-decoration: underline;" class="myButton">
+            {# I18N: Navbar text. #}
+            {{ gettext('Logout') }}
+          </a>
+        </li>
+        {% elif loginUrl %}
+        <li class="gcb-pull-right">
+          {# I18N: Navbar text. #}
+          <a href="{{ loginUrl }}" class="myButton">{{ gettext('Login') }}</a>
+        </li>
+        {% endif %}
+        <!-- Admin, Dashboard -->
+        {{course_info.base.before_navbar_ends | safe}}
+        {% if is_super_admin %}
+          <li class="gcb-pull-right">
+            <a href="/admin" class="myButton">Admin</a>
+          </li>
+        {% endif %}
+        {% if is_course_admin %}
+          <li class="gcb-pull-right">
+            <a href="dashboard" class="myButton">Dashboard</a>
+          </li>
+        {% endif %}
+      </ul>
+  </div>
+</div>

@@ -1,5 +1,4 @@
 /*
-
   Copyright 2012 Google Inc. All Rights Reserved.
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +12,6 @@
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
-
 */
 
 /*
@@ -35,8 +33,7 @@
 .gcb-butterbar {
   text-align: center;
   padding: 0 16px;
-  background: #FFFFB7;
-  border: 1px solid #BFBA26;
+  background: #CCC;
   margin-bottom: -35px;
   position: relative;
   display: inline-block;
@@ -47,9 +44,6 @@
 
   opacity: 0;
   left: -1000%;
-}
-.gcb-butterbar-dashboard {
-  margin-top: 5px;
 }
 .gcb-butterbar.shown {
   opacity: 1;

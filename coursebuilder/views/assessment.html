@@ -15,8 +15,7 @@
   - {{ gettext('Assessment') }}
 {% endblock subtitle %}
 
-{% block top_content %}
-{% endblock %}
+{% block top_content %}{% endblock %}
 
 {% block main_content %}
 
@@ -29,8 +28,8 @@
   {% import 'assessment_html_content.html' as html_assessment %}
 {% endif %}
 
-<div id="gcb-main">
-  <div class="gcb-article">
+<div id="gcb-main" class="blue">
+  <div class="assessment">
     {% if assessment_script_src %}
       <script src="{{ assessment_script_src }}"></script>
     {% endif %}
@@ -54,20 +53,19 @@
             {{ gettext('The due date for submitting this assignment has passed. It was due on %(submission_due_date)s.', submission_due_date=submission_due_date) }}
           </strong>
         {% else %}
-          <strong>
             {# I18N: Shown to the student on the assignment page. #}
-            {{ gettext('Due date for this assignment: ') }}
-          </strong>
-          {{ submission_due_date }}.
+            {# <strong> {{ gettext('Due date for this assignment: ') }} </strong> #}
+          {# {{ submission_due_date }}. #}
         {% endif %}
       </p>
 
       {% if matcher == 'peer' %}
-        <p>
-          <em>
+        <p style="font-size:13px;">
             {# I18N: Instructions to the student for a peer-reviewed assignment. #}
             {{ gettext('You may only submit this assignment once. After you submit it, the assignment will become read-only, and you will not be able to modify your answers. The answers you submit here will be reviewed by your peers.')}}
-          </em>
+        </p>
+        <p style="color:orange;font-size:13px;">
+            Only submit link to the Google Docs that are visible to "Anybody with Link" or "Public. Please refer to the documention listed at <a style="color:orange;" href="https://support.google.com/drive/answer/2494822?hl=en" target="_blank">https://support.google.com/drive/answer/2494822?hl=en</a>
         </p>
       {% endif %}
 
@@ -133,7 +131,7 @@
 
     {% endif %}
 
-    <div style="width: 970px;" id="assessmentContents"></div>
+    <div style="padding-left: 25px;" id="assessmentContents" class="{% if grader == 'human' %}assessment-homework{% endif %}"></div>
 
     {% if model_version == '1.5' and not readonly_student_assessment %}
       {{

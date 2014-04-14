@@ -1,0 +1,23 @@
+{% extends 'base_course.html' %}
+
+{% block subtitle %}
+Students
+{% endblock subtitle %}
+
+{% block top_content %}
+{% endblock %}
+
+{% block main_content %}
+<div id="gcb-main">
+  <div class="gcb-article tab-content">
+  {% for s in students_data %}
+      {% if s.is_enrolled %}
+          {{ s.email }} </br>
+      {% else %}
+          {{ s.email }} (not registered)</br>
+      {% endif %}
+  {% endfor %}
+  
+  </div>
+</div>
+{% endblock %}
