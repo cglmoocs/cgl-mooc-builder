@@ -421,7 +421,7 @@ class SectionRESTHandler(CommonUnitRESTHandler):
 
     # CGL-MOOC-Builder: adds inputex-textarea and inputex-integer
     REQUIRED_MODULES = [
-        'inputex-string', 'inputex-select',
+        'inputex-string', 'inputex-select', 'gcb-rte',
         'inputex-uneditable', 'inputex-textarea', 'inputex-integer']
 
     @classmethod
@@ -498,8 +498,8 @@ class UnitRESTHandler(CommonUnitRESTHandler):
             "title": {"optional": true, "type": "string"},
             "is_draft": {"type": "boolean"},
             "coding": {"type": "string", "optional": true},
-            "resources": {"type":"string", "format":"text", "optional": true},
-            "files": {"type":"string", "format":"text", "optional": true},
+            "resources": {"type":"string", "format":"html", "optional": true},
+            "files": {"type":"string", "format":"html", "optional": true},
             "overview": {"type":"string", "format":"text", "optional": true},
             "total_time": {"type":"string", "optional": true},
             "playlist": {"type":"string", "optional": true},
@@ -526,7 +526,7 @@ class UnitRESTHandler(CommonUnitRESTHandler):
 
     # CGL-MOOC-Builder: adds inputex-textarea and inputex-integer
     REQUIRED_MODULES = [
-        'inputex-string', 'inputex-select',
+        'inputex-string', 'inputex-select', 'gcb-rte',
         'inputex-uneditable', 'inputex-textarea', 'inputex-integer']
 
     @classmethod
@@ -563,7 +563,7 @@ class UnitRESTHandler(CommonUnitRESTHandler):
             (['properties', 'files', '_inputex'], {'label': 'Files'}),
             (['properties', 'overview', '_inputex'], {'label': 'Overview'}),
             (['properties', 'total_time', '_inputex'], {'label': 'Total Time'}),
-            (['properties', 'playlist', '_inputex'], {'label': 'Playlist'}),
+            (['properties', 'playlist', '_inputex'], {'label': 'YouTube Playlist ID'}),
             (['properties', 'google_community', '_inputex'], {'label': 'Google Community ID'}),
             (['properties', 'section_id', '_inputex'], {
                 'label': 'Section ID', '_type': 'select', 'choices': section_list}),
@@ -1162,7 +1162,7 @@ class LessonRESTHandler(BaseRESTHandler):
     @classmethod
     def get_schema_annotations_dict(cls, units):
         unit_list = []
-        for unit in units:
+        for unit in sorted(units, key = lambda x: int(x.section_id or 0)):
             if unit.type == 'U':
                 unit_list.append({
                     'label': cgi.escape(
@@ -1190,14 +1190,14 @@ class LessonRESTHandler(BaseRESTHandler):
             # TODO(sll): The internal 'objectives' property should also be
             # renamed.
             (['properties', 'objectives', '_inputex'], {
-                'label': 'Lesson Body',
+                'label': 'Lesson Overview',
                 'supportCustomTags': tags.CAN_USE_DYNAMIC_TAGS.value,
                 'description': messages.LESSON_OBJECTIVES_DESCRIPTION}),
             (['properties', 'video', '_inputex'], {
                 'label': 'Video ID',
                 'description': messages.LESSON_VIDEO_ID_DESCRIPTION}),
             (['properties', 'notes', '_inputex'], {
-                'label': 'Notes',
+                'label': 'Presentation/Slides URL',
                 'description': messages.LESSON_NOTES_DESCRIPTION}),
             (['properties', 'activity_title', '_inputex'], {
                 'label': 'Activity Title',
