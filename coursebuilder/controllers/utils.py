@@ -534,7 +534,7 @@ class RegisterHandler(BaseHandler):
 
         # CGL-MOOC-Builder starts:
         # Send an notification email after registration
-        sender_address = "User Name <user@example.com>"
+        sender_address = "CGL-MOOC-Builder <"+os.environ['USER_EMAIL']+">"
         user_address = name + " <" + user.email() + ">"
         subject = "Welcome to the CGL-MOOC-Builder Online Course"
         body = "Dear " + name + ", Example HTML content"

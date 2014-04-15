@@ -423,6 +423,10 @@ class UnitHandler(BaseHandler):
                     unit_id, next_lesson.lesson_id))
         # CGL-MOOC-Builder ends
 
+        # Set template value for units(unit bar)
+        self.template_value['units'] = sorted(
+            self.get_units(), key = lambda x: int(x.section_id or 0))
+
         # Set template values for student progress
         self.template_value['is_progress_recorded'] = (
             CAN_PERSIST_ACTIVITY_EVENTS.value and not student.is_transient)

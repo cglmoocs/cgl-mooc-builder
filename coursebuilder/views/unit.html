@@ -26,98 +26,96 @@
 <script>
 var questionData = {};
 {% if lesson and lesson.scored %}
-	questionData.scored = true;
+    questionData.scored = true;
 {% else %}
-	questionData.scored = false;
+    questionData.scored = false;
 {% endif %}
 </script>
 <div id="gcb-main">
     {% if is_read_write_course and is_course_admin %}
-	    <a href="dashboard?action=edit_unit&key={{ unit_id }}" class="gcb-button gcb-button-action">Edit unit</a>
-    	{% if lesson %}
-       	<a href="dashboard?action=edit_lesson&key={{ lesson_id }}" class="gcb-button gcb-button-action">Edit lesson</a>
-	    {% endif %}
+        <a href="dashboard?action=edit_unit&key={{ unit_id }}" class="gcb-button gcb-button-action">Edit unit</a>
+        {% if lesson %}
+            <a href="dashboard?action=edit_lesson&key={{ lesson_id }}" class="gcb-button gcb-button-action">Edit lesson</a>
+        {% endif %}
     {% endif %}
 
     <div id="unit-page">
-	    <div id="unit-video-nav">
-        	{{course_info.unit.after_content_begins | safe}}
-      
-			{% if not lesson %}
-				<div class="unit-video-panel">
-                	{# I18N: Text shown for a unit that has had no lessons added to it yet. #}
-                    {{ gettext('This unit does not contain any lessons.') }}
-				</div>
-      
-            {% elif lesson.now_available or is_course_admin %}
-                {% if lesson.video %}
-                    <!-- Video --> 
-                    <div class="unit-video-panel">
-                        <p class="gcb-video-container">
-                            {# I18N: Alt text for an embedded YouTube video player. #}
-                            <iframe class="youtube-player" title="{{ gettext('YouTube Video Player') }}"
-                                width="650" height="400" frameborder="0" allowfullscreen
-                                src="https://www.youtube.com/embed/{{ lesson.video }}?feature=player_embedded&rel=0&html5=1&theme=light&color=red&autohide=1">
-                            </iframe>
-                        </p>
-                        <div id="unit-buttons-container">
-                            <!--Youtube Video-->
-                            <a href="http://www.youtube.com/watch?v={{ lesson.video }}&list={{ unit.playlist }}&index={{ lesson_id }}" target="_blank">
-                                <div class="unit-button" id="unit-button-2"></div>
-                            </a>
-                            
-                            <!--Slides Download-->
-                            {% if lesson.notes %}
-                                <a href="{{ lesson.notes }}" target="_blank"><div class="unit-button" id="unit-button-3"></div></a>
-                            {% else %}
-                                <div class="unit-button not-available" id="unit-button-3"></div>
-                            {% endif %} 
-                          
-                            <!--Unit Overview-->
-                            <div class="unit-button" id="unit-button-4">
-                            {% if unit.overview %}
-                                <div class="unit-slide description">
+        <div id="unit-video-nav">
+        {{course_info.unit.after_content_begins | safe}}
+
+        {% if not lesson %}
+            <div class="unit-video-panel">
+                {# I18N: Text shown for a unit that has had no lessons added to it yet. #}
+                {{ gettext('This unit does not contain any lessons.') }}
+            </div>
+        {% elif lesson.now_available or is_course_admin %}
+            {% if lesson.video %}
+                <!-- Video --> 
+                <div class="unit-video-panel">
+                    <p class="gcb-video-container">
+                        {# I18N: Alt text for an embedded YouTube video player. #}
+                        <iframe class="youtube-player" title="{{ gettext('YouTube Video Player') }}"
+                            width="650" height="400" frameborder="0" allowfullscreen
+                            src="https://www.youtube.com/embed/{{ lesson.video }}?feature=player_embedded&rel=0&html5=1&theme=light&color=red&autohide=1">
+                        </iframe>
+                    </p>
+                    <div id="unit-buttons-container">
+                        <!--Youtube Video-->
+                        <a href="http://www.youtube.com/watch?v={{ lesson.video }}&list={{ unit.playlist }}&index={{ lesson.index }}" target="_blank">
+                            <div class="unit-button" id="unit-button-2"></div>
+                        </a>
+                        <!--Slides Download-->
+                        {% if lesson.notes %}
+                            <a href="{{ lesson.notes }}" target="_blank"><div class="unit-button" id="unit-button-3"></div></a>
+                        {% else %}
+                            <div class="unit-button not-available" id="unit-button-3"></div>
+                        {% endif %}
+
+                        <!--Unit Overview-->
+                        <div class="unit-button" id="unit-button-4">
+                        {% if unit.overview %}
+                            <div class="unit-slide description">
+                                <div class="close-x">x</div>
+                                <p>Unit {{unit.index}} : {{ unit.title}}</p>
+                                {{ unit.overview | safe }}
+                            </div>
+                            <span class="expand-hide">+</span>
+                        {% endif %}
+                        </div>
+
+                        <!--Lesson Overview-->
+                        {% if lesson.objectives %}
+                            <div class="unit-button" id="unit-button-5">
+                                <div class="lesson-slide description">
                                     <div class="close-x">x</div>
-                                    <p>Unit {{unit.index}} : {{ unit.title}}</p>
-                                    {{ unit.overview | safe }}
+                                    <p>Unit {{unit.index}} Lesson {{lesson.index}}:{{ lesson.title}}</p>
+                                    {{ lesson.objectives | safe }}
                                 </div>
                                 <span class="expand-hide">+</span>
-                            {% endif %}
                             </div>
-                            
-                            <!--Lesson Overview-->
-                            {% if lesson.objectives %}
-                                <div class="unit-button" id="unit-button-5">
-                                    <div class="lesson-slide description">
-                                        <div class="close-x">x</div>
-                                        <p>Unit {{unit.index}} Lesson {{lesson.index}}:{{ lesson.title}}</p>
-                                        {{ lesson.objectives | safe }}
-                                    </div>
-                                    <span class="expand-hide">+</span>
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div><!--End of Video Panel-->
-                    
-                    <!--  lesson navigation -->
-                    <div id="unit-lesson-nav"> 
+                        {% endif %}
+                    </div>
+                </div><!--End of Video Panel-->
+
+                <!--  lesson navigation -->
+                <div id="unit-lesson-nav"> 
                     {% if lessons %}
                         {% include 'lesson_navbar.html' %}
                     {% endif %}
-                    </div> 
-                    {{course_info.unit.before_content_ends | safe}} 
-                    
-                    <div class="gcb-next-prev-button-box">
+                </div>
+                {{course_info.unit.before_content_ends | safe}}
+
+                <div class="gcb-next-prev-button-box">
                     {% if back_button_url %}
                         <a href="{{ back_button_url }}#navContainer"><div id="prev-button" class="unit-lesson-nav"></div> </a>
                     {% endif %}
-                    
+
                     {% if next_button_url %}
                         <a href="{{ next_button_url }}#navContainer"><div id="next-button" class="unit-lesson-nav"></div></a>
                     {% else %}
                         <a href="course" class="unit-lesson-nav"><div id="end-button" class="unit-lesson-nav"></div></a>
                     {% endif %}
-                    </div>
+                </div>
                 {% endif %}
             {% else %}
                 <h1 class="gcb-lesson-title">{{ lesson.title }}</h1>
@@ -128,7 +126,7 @@ var questionData = {};
             <a href="https://plus.google.com/communities/100002091471057833120/stream/{{ unit.google_community }}" target="_blank">
                 <div id="unit-button-1"></div>
             </a>
-		</div><!--ends unit-video-nav-->
+    </div><!--ends unit-video-nav-->
 
         <!-- Course folders -->
         <div id="course-panel">
@@ -137,11 +135,11 @@ var questionData = {};
                     {% if unit.files %}
                         <li><a href="#" name="tab1">Files</a></li>
                     {% endif %}
-                
+
                     {% if lesson.activity and lesson.activity_listed %}
                         <li><a href="#" name="tab2">Activity</a></li>
                     {% endif %}
-                
+
                     {% if unit.resources %}
                         <li><a href="#" name="tab3">Resources</a></li>
                     {% endif %}
@@ -156,7 +154,7 @@ var questionData = {};
                             <div class="gcb-lesson-content course-files">{{ unit.files | safe }}</div>
                         </div>
                     {% endif %}
-        
+
                     <!-- Activity -->
                     {% if lesson.activity and lesson.activity_listed %}
                         <div id="tab2" class="course-materials"> 
@@ -164,7 +162,7 @@ var questionData = {};
                             <div id="activityContents" class="gcb-lesson-content course_activity" style="width: 785px;"></div>
                         </div>
                     {% endif %}
-        
+
                     <!-- Resources -->
                     {% if unit.resources %}
                         <div id="tab3" class="course-materials">
@@ -175,9 +173,9 @@ var questionData = {};
                 {% if unit.resources or unit.files or (lesson.activity and lesson.activity_listed) %}
                 </div>
                 {% endif %}
-                
+
             {% endif %}
         </div>
-	</div>
+    </div>
 </div>
 {% endblock %}

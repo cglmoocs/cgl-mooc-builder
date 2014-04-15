@@ -436,7 +436,9 @@ class SectionRESTHandler(CommonUnitRESTHandler):
             (['properties', 'section_id', '_inputex'], {
                 'label': 'Section ID', '_type': 'uneditable'}),
             (['properties', 'section_title', '_inputex'], {'label': 'Section Title'}),
-            (['properties', 'section_img', '_inputex'], {'label': 'Section Img'}),
+            (['properties', 'section_img', '_inputex'], {
+                'label': 'Section Img',
+                'description': messages.UNIT_SECTION_IMG_DESCRIPTION }),
             (['properties', 'section_time', '_inputex'], {'label': 'Section Time'}),
             (['properties', 'section_overview', '_inputex'], {'label': 'Section Overview'}),
             STATUS_ANNOTATION]

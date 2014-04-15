@@ -96,17 +96,17 @@
                                 {% if not transient_student %}
                                     {% if progress[u.unit_id] == 2 %}<!-- completed -->
                                         <div class="status-image">
-                                            <img class="progress-status-png" src="/assets/img/status/completed.png" />
+                                            <img class="progress-status-png" src="assets/img/status/completed.png" />
                                             <span class="progress-status-unit-id">{{ u._index }}</span>
                                         </div>
                                     {% elif progress[u.unit_id] == 1 %}<!-- in progress-->
                                         <div class="status-image">
-                                            <img class="progress-status-png" src="/assets/img/status/in_progress.png" />
+                                            <img class="progress-status-png" src="assets/img/status/in_progress.png" />
                                             <span class="progress-status-unit-id">{{ u._index }}</span>
                                         </div>
                                     {% else %}<!-- not yet started -->
                                         <div class="status-image">
-                                            <img class="progress-status-png" src="/assets/img/status/not_started_yet.png" />
+                                            <img class="progress-status-png" src="assets/img/status/not_started_yet.png" />
                                             <span class="progress-status-unit-id">{{ u._index }} </span>
                                         </div>
                                     {% endif %}
@@ -124,7 +124,7 @@
                                 <div class="unit-pic-and-overview">
                                     <div class="unit-pic-and-overview-left">
                                         {%- if unit.section_img -%}
-                                            <img src="/assets/img/slider/{{ unit.section_img }}" />
+                                            <img src="assets/img/{{ unit.section_img }}" />
                                         {% endif %}
                                         </div>
 
