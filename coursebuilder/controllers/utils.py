@@ -274,6 +274,11 @@ class BaseHandler(ApplicationHandler):
             self.course = Course(self)
         return self.course
 
+    def get_students(self):
+        """CGL-MOOC-Builder: return all students"""
+        everyone = Student.all()
+        return everyone
+
     def find_unit_by_id(self, unit_id):
         """Gets a unit with a specific id or fails with an exception."""
         return self.get_course().find_unit_by_id(unit_id)
@@ -498,7 +503,7 @@ class RegisterHandler(BaseHandler):
         profile = StudentProfileDAO.get_profile_by_user_id(user.user_id())
         if profile and profile.nick_name:
             self.template_value['current_name'] = profile.nick_name
-
+        self.template_value['testtest'] = os.environ['USER_EMAIL']
         self.template_value['navbar'] = {}
         self.template_value['transient_student'] = True
         self.template_value['register_xsrf_token'] = (
@@ -534,7 +539,7 @@ class RegisterHandler(BaseHandler):
 
         # CGL-MOOC-Builder starts:
         # Send an notification email after registration
-        sender_address = "CGL-MOOC-Builder <"+os.environ['USER_EMAIL']+">"
+        sender_address = "X-Informatics <cglmoocs@gmail.com>"
         user_address = name + " <" + user.email() + ">"
         subject = "Welcome to the CGL-MOOC-Builder Online Course"
         body = "Dear " + name + ", Example HTML content"

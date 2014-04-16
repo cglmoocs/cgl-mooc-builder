@@ -108,8 +108,9 @@ Width of the input field, measured in columns.
 """
 
 UNIT_SECTION_IMG_DESCRIPTION = """
-Provide an absolute URL that points to the image or only the image name
-(e.g. my_section_img.jpg) after uploading to Assets -> Images & Documents.
+Provide an absolute URL that points to the image(e.g. http://path_to_your_img.jpg)
+or only the image name(e.g. my_section_img.jpg) after uploading to Assets -> Images
+& Documents.
 """
 
 LESSON_ACTIVITY_DESCRIPTION = assemble_sanitized_message("""
@@ -141,7 +142,7 @@ Provide a YouTube video ID to embed a video.
 
 LESSON_NOTES_DESCRIPTION = """
 Provide a URL that points to the slides for this lesson (if applicable). These
-notes can be accessed by clicking on the 'Unit Slides' button on the lesson
+slides can be accessed by clicking on the 'Unit Slides' button on the lesson
 page.
 """
 

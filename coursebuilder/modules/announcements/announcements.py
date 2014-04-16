@@ -19,6 +19,7 @@ __author__ = 'Saifu Angto (saifu@google.com)'
 
 import datetime
 import urllib
+import os
 
 from common import tags
 from controllers.utils import BaseHandler
@@ -354,11 +355,11 @@ class AnnouncementsItemRESTHandler(BaseRESTHandler):
             email_list = []
             recipient = ""
             for s in all_students:
-                if s.is_enrolled and s.email != "test@example.com":
+                if s.is_enrolled:
                     recipient = s.name + "<" + s.email + ">"
                     email_list.append(recipient)
             # send an announcement email
-            sender_address = "Sender Name <user@example.com>"
+            sender_address = "CGL-MOOC-Builder <cglmoocs@gmail.com>"
             user_address = email_list
             subject = "Announcement: " + entity.title
             body = ""
