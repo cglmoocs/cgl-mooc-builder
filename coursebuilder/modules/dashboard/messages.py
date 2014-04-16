@@ -108,8 +108,8 @@ Width of the input field, measured in columns.
 """
 
 UNIT_SECTION_IMG_DESCRIPTION = """
-Provide a URL that points to the image or the image name (e.g. my_section_img.jpg)
-from Assets -> Images & Documents.
+Provide an absolute URL that points to the image or only the image name
+(e.g. my_section_img.jpg) after uploading to Assets -> Images & Documents.
 """
 
 LESSON_ACTIVITY_DESCRIPTION = assemble_sanitized_message("""

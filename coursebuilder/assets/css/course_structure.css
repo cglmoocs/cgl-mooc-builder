@@ -305,7 +305,8 @@ div.accordion-sub-dropdown ~ span.accordion-sub {
 	padding-left:2em;
 }
 .unit-pic-and-overview-left > img {
-	width: 100%;
+	width: 472px;
+        height: 182px;
 }
 .unit-pic-and-overview-right {
 	padding: 0 0 20px 20px;

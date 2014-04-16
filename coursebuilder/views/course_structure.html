@@ -123,8 +123,8 @@
                             <div class="accordion-content">
                                 <div class="unit-pic-and-overview">
                                     <div class="unit-pic-and-overview-left">
-                                        {%- if unit.section_img -%}
-                                            <img src="assets/img/{{ unit.section_img }}" />
+                                        {% if unit.section_img %}
+                                            <img src="{% if unit.section_img[0:4] == 'http' %}{{ unit.section_img }}{% else %}assets/img/{{unit.section_img}}{% endif %}" />
                                         {% endif %}
                                         </div>
 
