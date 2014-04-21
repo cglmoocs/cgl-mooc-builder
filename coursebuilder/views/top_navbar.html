@@ -12,10 +12,10 @@
                 <a href="course" class="myButton">Course</a>
             </li>
             <li>
-                <a href="https://plus.google.com/u/0/communities/100002091471057833120" target="_blank" class="myButton">Join Discussion</a>
+                <a href="https://plus.google.com/u/0/communities/{{ google_community_id }}" target="_blank" class="myButton">Join Discussion</a>
             </li>
             <li>
-                <a href="announcements" target="_blank" class="myButton">Announcements</a>
+                <a href="announcements" class="myButton">Announcements</a>
             </li>
             {% if course_info.course.forum_embed_url %}
             <li {% if navbar.forum %}class='active'{% endif %}>

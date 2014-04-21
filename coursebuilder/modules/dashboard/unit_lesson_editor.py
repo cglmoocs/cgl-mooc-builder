@@ -1038,7 +1038,7 @@ class UnitLessonTitleRESTHandler(BaseRESTHandler):
     SCHEMA_DICT = transforms.loads(SCHEMA_JSON)
 
     SCHEMA_ANNOTATIONS_DICT = [
-        (['title'], 'Course Outline'),
+        (['title'], 'Course Outline - CGL-MOOC-Builder does not support section level organization at this moment'),
         (['_inputex'], {'className': 'organizer'}),
         (['properties', 'outline', '_inputex'], {
             'sortable': 'true',
@@ -1145,7 +1145,7 @@ class LessonRESTHandler(BaseRESTHandler):
             "scored": {"type": "string"},
             "objectives" : {
                 "type": "string", "format": "html", "optional": true},
-            "notes" : {"type": "string", "optional": true},
+            "notes" : {"type": "url", "optional": true},
             "activity_title" : {"type": "string", "optional": true},
             "activity_listed" : {"type": "boolean", "optional": true},
             "activity": {"type": "string", "format": "text", "optional": true},
@@ -1158,7 +1158,7 @@ class LessonRESTHandler(BaseRESTHandler):
 
     REQUIRED_MODULES = [
         'inputex-string', 'gcb-rte', 'inputex-select', 'inputex-textarea',
-        'inputex-uneditable', 'inputex-checkbox']
+        'inputex-uneditable', 'inputex-checkbox', 'inputex-url']
     EXTRA_JS_FILES = ['lesson_editor_lib.js', 'lesson_editor.js']
 
     @classmethod

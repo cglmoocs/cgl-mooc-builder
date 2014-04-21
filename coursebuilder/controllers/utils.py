@@ -456,6 +456,26 @@ class PreviewHandler(BaseHandler):
             'url' in course['main_image'] and
             course['main_image']['url'])
 
+
+        # CGL-MOOC-Builder starts:
+        # Set template values for instructor_details, main_video and
+        # Google Community ID.
+        if 'instructor_details' in course:
+            self.template_value['instructor_details'] = course['instructor_details']
+        else:
+            self.template_value['instructor_details'] = ''
+
+        if self.template_value['video_exists']:
+            self.template_value['main_video'] = course['main_video']['url']
+        else:
+            self.template_value['main_video'] = ''
+
+        if 'google_community_id' in course:
+            self.template_value['google_community_id'] = course['google_community_id']
+        else:
+            self.template_value['google_communit_id'] = ''
+        # CGL-MOOC-Builder ends
+
         # CGL-MOOC-Builder starts:
         # Set template value for all lessons in course_structure_preview.html
         all_lessons = {}
@@ -543,7 +563,7 @@ class RegisterHandler(BaseHandler):
         user_address = name + " <" + user.email() + ">"
         subject = "Welcome to the CGL-MOOC-Builder Online Course"
         body = "Dear " + name + ", Example HTML content"
-        html = "<div style='background-color: #999999; color: #ffffff; padding: 0px 20px 20px 20px; font-family: 'Verdana', sans-serif;'> <div style='width: 500px; margin: 0 auto;'> <p style='background-color: #093359; height: 100px; margin: 0px; padding: 0px;'> <img src='http://cloudmooc.pti.indiana.edu:8080/assets/img/Logo.png'></img> </p> <div style='background-color: #CCC; color: black; padding: 15px;'> <p>Welcome " + name + ",</p> <p>Thank you for enrolling in <a href='https://bigdatacoursespring2014.appspot.com' title='Big Data Applications and Analytics Course Sptring 2014' target='_blank' style='color: #003366; '>Big Data Applications and Analytics Course - Spring 2014</a>. This course will take you on a journey to learn great things about Big Data and its case studies.</p><p>Go to the home page for downloading the entire syllabus, slides, and the entire course material</p><p>Get Ready!<br> Geoffrey Fox and the Big Data Course Team</p> <p>Go to the <a href='https://bigdatacoursespring2014.appspot.com' title='Big Data Applications and Analytics Course Spring 2014' target='_blank' style='color: #093359;'>Course</a></p> <p>Share this course with your friends!</p> </div> <p style='background-color: #012256; height: 50px; margin: 0px; padding: 0px;'></p></div></div>"
+        html = "<div style='background-color: #999999; color: #ffffff; padding: 0px 20px 20px 20px; font-family: 'Verdana', sans-serif;'> <div style='width: 500px; margin: 0 auto;'> <p style='background-color: #093359; height: 100px; margin: 0px; padding: 0px;'> <img src='http://cloudmooc.pti.indiana.edu:8080/assets/img/Logo.png'></img> </p> <div style='background-color: #CCC; color: black; padding: 15px;'> <p>Welcome " + name + ",</p> <p>Thank you for enrolling in this.</p> </div> <p style='background-color: #012256; height: 50px; margin: 0px; padding: 0px;'></p></div></div>"
         mail.send_mail(sender_address, user_address, subject, body, html=html)
         # CGL-MOOC-Builder ends
 

@@ -103,8 +103,8 @@ DEFAULT_COURSE_YAML_DICT = {
         'title': 'UNTITLED COURSE',
         'locale': 'en_US',
         'main_image': {},
-        'browsable': True,
-        'now_available': False},
+        'browsable': False,
+        'now_available': True},
     'preview': {},
     'unit': {},
     'reg_form': {
@@ -295,6 +295,11 @@ def create_course_registry():
         'calling.  This allows the Tag Manager to notify other site use '
         'tracking services what users are doing on the site.  Obtain this '
         'ID by signing up at http://www.google.com/tagmanager'))
+    course_opts.add_property(SchemaField(
+        'course:google_community_id', 'ID for Google Community', 'string',
+        optional=True, description='Provide your Google Community ID. '
+        'Google Community can be accessed by clicking on the '
+        '\'Join Discussion\' button on the home page.'))
 
     # Unit level settings.
     unit_opts = reg.add_sub_registry('unit', 'Unit and Lesson Settings')
@@ -327,9 +332,9 @@ def create_course_registry():
             'excludedCustomTags':
             common.tags.EditorBlacklists.COURSE_SCOPE}))
     homepage_opts.add_property(SchemaField(
-        'course:main_video:url', 'Course Video', 'url', optional=True,
-        description='URL for the preview video shown on the course homepage '
-        '(e.g. https://www.youtube.com/embed/Kdg2drcUjYI ).'))
+        'course:main_video:url', 'Course Video', 'string', optional=True,
+        description='YouTube ID for the preview video shown on the course homepage '
+        '(e.g. Kdg2drcUjYI in https://www.youtube.com/embed/Kdg2drcUjYI ).'))
     homepage_opts.add_property(SchemaField(
         'course:main_image:url', 'Course Image', 'string', optional=True,
         description='URL for the preview image shown on the course homepage. '

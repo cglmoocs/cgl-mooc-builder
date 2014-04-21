@@ -199,6 +199,24 @@ class CourseHandler(BaseHandler):
             'url' in course['main_image'] and
             course['main_image']['url'])
 
+        # CGL-MOOC-Builder starts:
+        # Set template values for instructor_details and main_video
+        if 'instructor_details' in course:
+            self.template_value['instructor_details'] = course['instructor_details']
+        else:
+            self.template_value['instructor_details'] = ''
+
+        if self.template_value['video_exists']:
+            self.template_value['main_video'] = course['main_video']['url']
+        else: 
+            self.template_value['main_video'] = ''
+
+        if 'google_community_id' in course:
+            self.template_value['google_community_id'] = course['google_community_id']
+        else:
+            self.template_value['google_communit_id'] = ''
+        # CGL-MOOC-Builder ends
+
         self.template_value['is_progress_recorded'] = (
             CAN_PERSIST_ACTIVITY_EVENTS.value)
         self.template_value['navbar'] = {'course': True}
@@ -295,6 +313,24 @@ class HomeHandler(BaseHandler):
             'main_image' in course and
             'url' in course['main_image'] and
             course['main_image']['url'])
+
+        # CGL-MOOC-Builder starts:
+        # Set template values for instructor_details and main_video
+        if 'instructor_details' in course:
+            self.template_value['instructor_details'] = course['instructor_details']
+        else:
+            self.template_value['instructor_details'] = ''
+
+        if self.template_value['video_exists']:
+            self.template_value['main_video'] = course['main_video']['url']
+        else: 
+            self.template_value['main_video'] = ''
+
+        if 'google_community_id' in course:
+            self.template_value['google_community_id'] = course['google_community_id']
+        else:
+            self.template_value['google_communit_id'] = ''
+        # CGL-MOOC-Builder ends
 
         self.template_value['is_progress_recorded'] = (
             CAN_PERSIST_ACTIVITY_EVENTS.value)

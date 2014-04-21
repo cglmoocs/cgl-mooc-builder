@@ -48,7 +48,7 @@ course:
     url: https://www.youtube.com/embed/Kdg2drcUjYI?rel=0
   main_image:
     url: /assets/img/banner1.png
-    alt_text: Photo of Dan Russell
+    alt_text: Photo of
 
   # Course start date.
   start_date: 'July 10, 2012'
@@ -76,11 +76,11 @@ course:
   locale: 'en_US'
 
   # Whether the course is open to the students.
-  now_available: true
+  now_available: True
 
   # Whether the course material can be accessed without requiring users to log
   # in or register.
-  browsable: false
+  browsable: False
 
   # Google Analytics tag: Fill this in with a value obtained by signing up
   # at http://www.google.com/analytics.  Note that you may wish instead to
@@ -108,6 +108,8 @@ course:
   # Tag Manager is not emitted.  Not having a value here is harmless.
   google_tag_manager_id: ''
 
+  # CGL-MOOC-Builder: Google Community ID
+  google_community_id: ''
 
 ########################
 # Course preview page

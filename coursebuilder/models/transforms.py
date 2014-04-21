@@ -30,7 +30,7 @@ from google.appengine.ext import db
 JSON_DATE_FORMAT = '%Y/%m/%d'
 JSON_DATETIME_FORMAT = '%Y/%m/%d %H:%M'
 JSON_TYPES = ['string', 'date', 'datetime', 'text', 'html', 'boolean',
-              'integer', 'number', 'array', 'object']
+              'integer', 'number', 'array', 'object', 'url']
 # Prefix to add to all JSON responses to guard against XSSI. Must be kept in
 # sync with modules/oeditor/oeditor.html.
 _JSON_XSSI_PREFIX = ")]}'\n"
