@@ -179,14 +179,14 @@
         {% for action in section.actions %}
           {# CGL-MOOC-Builder: disable Organize #}
           {% if action.caption == 'Organize' %}
-          <button title="Disabled" class="gcb-button gcb-pull-right gray-out" role="button">{{ action.caption }}</button>
+          <button title="Not Supported in CGL-MOOC-Builder" class="gcb-button gcb-pull-right gray-out" role="button">{{ action.caption }}</button>
           {% elif action.href %}
           <a id='{{ action.id }}' class="gcb-button gcb-pull-right" role="button"
               href="{{ action.href }}" >{{ action.caption }}</a>
-          {# CGL-MOOC-Builder: disable Add Link #}
-          {% elif action.caption == 'Add Link' %}
+          {# CGL-MOOC-Builder: disable Add Link and Add Assessment #}
+          {% elif action.caption == 'Add Link' or action.caption == 'Add Assessment' %}
           <form>
-            <button title="Disabled" class="gcb-button gcb-pull-right gray-out" type="button" disabled>{{ action.caption }}</button>
+            <button title="Not Supported in CGL-MOOC-Builder" class="gcb-button gcb-pull-right gray-out" type="button" disabled>{{ action.caption }}</button>
           </form>
           {% else %}
           <form id='{{ action.id }}' action='{{ action.action }}' method='POST'>
