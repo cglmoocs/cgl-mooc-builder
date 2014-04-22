@@ -145,6 +145,9 @@
         .strong {
           font-weight: bold;
         }
+        .gray-out {
+          background-color:gray;
+        }
     </style>
   </head>
   <body>
@@ -174,9 +177,17 @@
       {% for section in sections %}
       <div id='gcb-section'>
         {% for action in section.actions %}
-          {% if action.href %}
+          {# CGL-MOOC-Builder: disable Organize #}
+          {% if action.caption == 'Organize' %}
+          <button title="Disabled" class="gcb-button gcb-pull-right gray-out" role="button">{{ action.caption }}</button>
+          {% elif action.href %}
           <a id='{{ action.id }}' class="gcb-button gcb-pull-right" role="button"
               href="{{ action.href }}" >{{ action.caption }}</a>
+          {# CGL-MOOC-Builder: disable Add Link #}
+          {% elif action.caption == 'Add Link' %}
+          <form>
+            <button title="Disabled" class="gcb-button gcb-pull-right gray-out" type="button" disabled>{{ action.caption }}</button>
+          </form>
           {% else %}
           <form id='{{ action.id }}' action='{{ action.action }}' method='POST'>
             <input type="hidden" name="xsrf_token" value="{{ action.xsrf_token }}">

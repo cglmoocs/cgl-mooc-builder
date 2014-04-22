@@ -1966,3 +1966,12 @@ margin-top: 7px;
 	vertical-align:top;
 	margin-right:8px;
 }
+
+
+
+#admin-students-table {
+    width:1024px;
+}
+#motivation-cell {
+    width:160px;
+}

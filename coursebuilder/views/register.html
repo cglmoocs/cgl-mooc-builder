@@ -21,7 +21,6 @@
 
       <p>{{course_info.reg_form.header_text | safe}} Only question 1 and 7 are required.</p>
       <p>* = required</p>
-      <div>{{ testtest }}</div>
       <form action="register" method='post'>
         <input type="hidden" name="xsrf_token" value="{{ register_xsrf_token|escape }}">
         <fieldset class="white fieldset">

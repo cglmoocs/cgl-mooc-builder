@@ -443,6 +443,33 @@ class SectionRESTHandler(CommonUnitRESTHandler):
             (['properties', 'section_overview', '_inputex'], {'label': 'Section Overview'}),
             STATUS_ANNOTATION]
 
+    # CGL-MOOC-Builder: override the get method in CommonUnitRESTHandler
+    # so that it has its own message.
+    def get(self):
+        """A GET REST method."""
+        key = self.request.get('key')
+
+        if not CourseOutlineRights.can_view(self):
+            transforms.send_json_response(
+                self, 401, 'Access denied.', {'key': key})
+            return
+
+        unit = courses.Course(self).find_unit_by_id(key)
+        if not unit:
+            transforms.send_json_response(
+                self, 404, 'Object not found.', {'key': key})
+            return
+
+        message = ['Success.']
+        if self.request.get('is_newly_created'):
+            unit_type = verify.UNIT_TYPE_NAMES[unit.type].lower()
+            message.append('New Section and a unit has been created and saved.')
+
+        transforms.send_json_response(
+            self, 200, '\n'.join(message),
+            payload_dict=self.unit_to_dict(unit),
+            xsrf_token=XsrfTokenManager.create_xsrf_token('put-unit'))
+
     def unit_to_dict(self, unit):
         assert unit.type == 'U'
 
@@ -1206,6 +1233,7 @@ class LessonRESTHandler(BaseRESTHandler):
                 'description': messages.LESSON_ACTIVITY_TITLE_DESCRIPTION}),
             (['properties', 'activity_listed', '_inputex'], {
                 'label': 'Activity Listed',
+                '_type': 'uneditable',
                 'description': messages.LESSON_ACTIVITY_LISTED_DESCRIPTION}),
             (['properties', 'activity', '_inputex'], {
                 'label': 'Activity',

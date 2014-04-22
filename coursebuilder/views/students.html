@@ -1,7 +1,7 @@
 {% extends 'base_course.html' %}
 
 {% block subtitle %}
-Students
+List of Enrolled Students
 {% endblock subtitle %}
 
 {% block top_content %}
@@ -9,15 +9,41 @@ Students
 
 {% block main_content %}
 <div id="gcb-main">
-  <div class="gcb-article tab-content">
-  {% for s in students_data %}
-      {% if s.is_enrolled %}
-          {{ s.email }} </br>
-      {% else %}
-          {{ s.email }} (not registered)</br>
-      {% endif %}
-  {% endfor %}
-  
-  </div>
+    <div class="gcb-article tab-content">
+    <div> Total Enrolled Students: {{ total_students }} </div>
+    <table id='admin-students-table'>
+        <tr>
+            <td id='name-cell'>Name</td>
+            <td id='email-cell'>Email</td>
+            <td id='age-cell'>Age</td>
+            <td id='city-cell'>City</td>
+            <td id='state-cell'>State</td>
+            <td id='country-cell'>Country</td>
+            <td id='education-cell'>Education</td>
+            <td id='profession-cell'>Profession</td>
+            <td id='motivation-cell'>Motivation</td>
+            <td id='referral-cell'>Referral</td>
+        </tr>
+
+        {% for s in students_data %}
+        <tr>
+        {% if s.is_enrolled %}
+            <td>{{ s.name }}</td>
+            <td>{{ s.email }}</td>
+            <td>{{ s.age }}</td>
+            <td>{{ s.city }}</td>
+            <td>{{ s.state }}</td>
+            <td>{{ s.country }}</td>
+            <td>{{ s.education }}</td>
+            <td>{{ s.profession }}</td>
+            <td>{{ s.motivation }}</td>
+            <td>{{ s.referral }}</td>
+        {% else %}
+        {% endif %}
+        </tr>
+        {% endfor %}
+
+    </table>
+    </div>
 </div>
 {% endblock %}

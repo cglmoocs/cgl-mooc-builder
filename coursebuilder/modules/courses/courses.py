@@ -52,7 +52,8 @@ def register_module():
         ('/unit', lessons.UnitHandler),
         ('/team', utils.TeamHandler),
         ('/faq', utils.FAQHandler),
-        ('/home', lessons.HomeHandler)]
+        ('/home', lessons.HomeHandler),
+        ('/students', utils.ShowAllStudentsHandler)]
 
     global custom_module
     custom_module = custom_modules.Module(

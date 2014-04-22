@@ -523,7 +523,6 @@ class RegisterHandler(BaseHandler):
         profile = StudentProfileDAO.get_profile_by_user_id(user.user_id())
         if profile and profile.nick_name:
             self.template_value['current_name'] = profile.nick_name
-        self.template_value['testtest'] = os.environ['USER_EMAIL']
         self.template_value['navbar'] = {}
         self.template_value['transient_student'] = True
         self.template_value['register_xsrf_token'] = (
@@ -570,6 +569,36 @@ class RegisterHandler(BaseHandler):
         # Render registration confirmation page
         self.redirect('/course#registration_confirmation')
 
+
+class ShowAllStudentsHandler(BaseHandler):
+    """CGL-MOOC-Builder: Handler for students page."""
+    def get(self):
+        """Handles GET requests."""
+        if not Roles.is_course_admin(self.app_context):
+            self.redirect('/preview')
+            return
+
+        student = self.personalize_page_and_get_enrolled(
+            supports_transient_student=True)
+        if not student:
+            return
+        else:
+            # Set template value for progress bar that shows on the top navigation(header.html)
+            total_progress = (self.get_progress_tracker().get_overall_progress_score(student))
+            self.template_value['progress_value'] = total_progress.get('progress_score', 0)
+            self.template_value['complete_value'] = total_progress.get('completed_score', 0)
+            self.template_value['percentage'] = total_progress.get('percentage', '')
+
+        all_students = self.get_students()
+        i = 0
+        for s in all_students:
+            i = i + 1
+        self.template_value['navbar'] = {'students': True}
+        self.template_value['total_students'] = i
+        self.template_value['students_data'] = all_students
+        self.render('students.html')
+
+
 class ForumHandler(BaseHandler):
     """CGL-MOOC-Builder: Handler for forum page."""
 
@@ -592,6 +621,7 @@ class ForumHandler(BaseHandler):
 
         self.template_value['navbar'] = {'forum': True}
         self.render('forum.html')
+
 
 class FAQHandler(BaseHandler):
     """CGL-MOOC-Builder: Handler for faq page."""
