@@ -30,6 +30,9 @@ html, body {
 	margin: 0;
 	padding: 0;
 }
+.main-bg-color {
+    background: none repeat scroll 0 0 #214C4D
+}
 table {
 	border-collapse: collapse;
 	border-spacing: 0;
@@ -122,7 +125,6 @@ th, td {
 #gcb-nav-y {
 	float: left;
 	position: absolute;
-	background-color: rgb(8, 51, 88);
 	width: 320px;
 	height: 431px;
 }
@@ -277,10 +279,8 @@ th, td {
 	height: 1000px;
 	text-align: center;
 	overflow: hidden;
-	background-color: #003366;
 }
 #unit-video-nav {
-	background-color: #003366;
 	height: 570px;
 	width: 1024px;
 }
@@ -288,7 +288,6 @@ th, td {
 	position: relative;
 	text-align: center;
 	overflow: hidden;
-	background-color: #003366;
 	width: 70%;
 	float: left;
 	height: 500px;
@@ -390,7 +389,6 @@ a.gcb-button-action, button.gcb-button-action {
 	position: fixed;
 	width: 1024px;
 	z-index: 9999;
-	background: #003366;
 }
 #gcb-nav-x.gcb-complex ul {
 	height: 45px;
@@ -423,7 +421,7 @@ a.gcb-button-action, button.gcb-button-action {
 	width: 26px;
 }
 .gcb-cols {
-	background: #003366;
+/*	background: #003366;*/
 	margin: 10px auto;
 	padding: 15px 25px;
 }
@@ -1566,7 +1564,6 @@ div.inputEx-Field {
 	height: 350px;
 }
 #summaryinstructor {
-	background: #003366;
 	padding-bottom:20px;
 }
 #summaryinstructor p {
@@ -1798,7 +1795,7 @@ div.inputEx-Field {
 	width: 1024px;
 	margin: auto;
 	height: 40px;
-	background: #003366;
+/*	background: #003366;*/
 }
 #footer_text p {
 	text-align: center;

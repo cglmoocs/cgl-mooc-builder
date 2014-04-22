@@ -296,6 +296,13 @@ class SearchHandler(utils.BaseHandler):
                                  GCB_SEARCH_FOLDER_NAME)
             template = self.get_template('search.html', additional_dirs=[path])
             self.template_value['navbar'] = {}
+            # CGL-MOOC-Builder:
+            # Set template value for progress bar that shows on the top navigation(header.html)
+            total_progress = (self.get_progress_tracker().get_overall_progress_score(student))
+            self.template_value['progress_value'] = total_progress.get('progress_score', 0)
+            self.template_value['complete_value'] = total_progress.get('completed_score', 0)
+            self.template_value['percentage'] = total_progress.get('percentage', '')
+
             self.response.out.write(template.render(self.template_value))
 
 
