@@ -795,7 +795,7 @@ class PersistentCourse13(object):
         """Loads instance attributes from the dict."""
         self.next_id = int(adict.get('next_id'))
         # CGL-MOOC-Builder: next_section_id
-        self.next_section_id = int(adict.get('next_section_id'))
+        self.next_section_id = int(adict.get('next_section_id') or 1)
 
         self.units = []
         unit_dicts = adict.get('units')
