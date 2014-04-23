@@ -17,7 +17,7 @@
             <li>
                 <a href="announcements" class="myButton">Announcements</a>
             </li>
-            {% if course_info.course.forum_embed_url %}
+            {% if course_info.course.forum_embed_url and false %}
             <li {% if navbar.forum %}class='active'{% endif %}>
                 {# I18N: Navbar tab. #}
                 <a href="forum" class="myButton">{{ gettext('Forum') }}</a>
