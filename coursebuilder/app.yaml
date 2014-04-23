@@ -28,8 +28,17 @@ handlers:
 # application_readable flag should be set to true if you want the local
 # assets folder to be readable by the application.
 # Refer to https://developers.google.com/appengine/docs/python/config/appconfig#Python_app_yaml_Static_file_handlers. 
-- url: /assets
-  static_dir: assets
+- url: /assets/js\.jsslider
+  static_dir: assets/js\.jsslider
+  application_readable: true
+- url: /assets/css
+  static_dir: assets/css
+  application_readable: true
+- url: /assets/ckeditor
+  static_dir: assets/ckeditor
+  application_readable: true
+- url: /assets/lib
+  static_dir: assets/lib
   application_readable: true
 # CGL-MOOC-Builder ends
 - url: /remote_api
