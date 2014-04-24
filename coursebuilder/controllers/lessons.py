@@ -199,8 +199,7 @@ class CourseHandler(BaseHandler):
             'url' in course['main_image'] and
             course['main_image']['url'])
 
-        # CGL-MOOC-Builder starts:
-        # Set template values for instructor_details and main_video
+        # CGL-MOOC-Builder: Set template values for instructor_details and main_video
         if 'instructor_details' in course:
             self.template_value['instructor_details'] = course['instructor_details']
         else:
@@ -211,11 +210,8 @@ class CourseHandler(BaseHandler):
         else: 
             self.template_value['main_video'] = ''
 
-        if 'google_community_id' in course:
-            self.template_value['google_community_id'] = course['google_community_id']
-        else:
-            self.template_value['google_communit_id'] = ''
-        # CGL-MOOC-Builder ends
+        # CGL-MOOC-Builder: Set template value for Google Community ID
+        self.set_google_community_template_value()
 
         self.template_value['is_progress_recorded'] = (
             CAN_PERSIST_ACTIVITY_EVENTS.value)
@@ -314,8 +310,7 @@ class HomeHandler(BaseHandler):
             'url' in course['main_image'] and
             course['main_image']['url'])
 
-        # CGL-MOOC-Builder starts:
-        # Set template values for instructor_details and main_video
+        # CGL-MOOC-Builder: Set template values for instructor_details and main_video
         if 'instructor_details' in course:
             self.template_value['instructor_details'] = course['instructor_details']
         else:
@@ -326,11 +321,8 @@ class HomeHandler(BaseHandler):
         else: 
             self.template_value['main_video'] = ''
 
-        if 'google_community_id' in course:
-            self.template_value['google_community_id'] = course['google_community_id']
-        else:
-            self.template_value['google_communit_id'] = ''
-        # CGL-MOOC-Builder ends
+        # CGL-MOOC-Builder: Set template value for Google Community ID
+        self.set_google_community_template_value()
 
         self.template_value['is_progress_recorded'] = (
             CAN_PERSIST_ACTIVITY_EVENTS.value)
@@ -392,6 +384,9 @@ class UnitHandler(BaseHandler):
             self.template_value['objectives'] = lesson.objectives
 
         self.template_value['lessons'] = lessons
+
+        # CGL-MOOC-Builder: Set template value for Google Community ID
+        self.set_google_community_template_value()
 
         # If this unit contains no lessons, return.
         if not lesson:
@@ -487,6 +482,7 @@ class UnitHandler(BaseHandler):
         self.template_value['progress_value'] = total_progress.get('progress_score', 0)
         self.template_value['complete_value'] = total_progress.get('completed_score', 0)
         self.template_value['percentage'] = total_progress.get('percentage', '')
+
         # CGL-MOOC-Builder ends
         self.render('unit.html')
 

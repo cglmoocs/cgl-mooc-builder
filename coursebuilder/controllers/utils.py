@@ -395,6 +395,14 @@ class BaseHandler(ApplicationHandler):
         template = self.get_template(template_file)
         self.response.out.write(template.render(self.template_value))
 
+    def set_google_community_template_value(self):
+        """Set template value of Google Community ID"""
+        course = self.app_context.get_environ()['course']
+        if 'google_community_id' in course:
+            self.template_value['google_community_id'] = course['google_community_id']
+        else:
+            self.template_value['google_communit_id'] = ''
+
 
 class BaseRESTHandler(BaseHandler):
     """Base REST handler."""
@@ -470,10 +478,13 @@ class PreviewHandler(BaseHandler):
         else:
             self.template_value['main_video'] = ''
 
-        if 'google_community_id' in course:
-            self.template_value['google_community_id'] = course['google_community_id']
-        else:
-            self.template_value['google_communit_id'] = ''
+        # Set template value for Google Community ID
+        self.set_google_community_template_value()
+
+        #if 'google_community_id' in course:
+        #    self.template_value['google_community_id'] = course['google_community_id']
+        #else:
+        #    self.template_value['google_communit_id'] = ''
         # CGL-MOOC-Builder ends
 
         # CGL-MOOC-Builder starts:
@@ -517,6 +528,9 @@ class RegisterHandler(BaseHandler):
         if not can_register:
             self.redirect('/course#registration_closed')
             return
+
+        # Set template value for Google Community ID
+        self.set_google_community_template_value()
 
         # pre-fill nick name from the profile if available
         self.template_value['current_name'] = ''
@@ -602,6 +616,9 @@ class ShowAllStudentsHandler(BaseHandler):
             self.template_value['complete_value'] = total_progress.get('completed_score', 0)
             self.template_value['percentage'] = total_progress.get('percentage', '')
 
+        # Set template value for Google Community ID
+        self.set_google_community_template_value()
+
         all_students = self.get_students()
         i = 0
         for s in all_students:
@@ -632,6 +649,9 @@ class ForumHandler(BaseHandler):
                 self.template_value['complete_value'] = total_progress.get('completed_score', 0)
                 self.template_value['percentage'] = total_progress.get('percentage', '')
 
+        # Set template value for Google Community ID
+        self.set_google_community_template_value()
+
         self.template_value['navbar'] = {'forum': True}
         self.render('forum.html')
 
@@ -654,6 +674,9 @@ class FAQHandler(BaseHandler):
                 self.template_value['progress_value'] = total_progress.get('progress_score', 0)
                 self.template_value['complete_value'] = total_progress.get('completed_score', 0)
                 self.template_value['percentage'] = total_progress.get('percentage', '')
+
+        # Set template value for Google Community ID
+        self.set_google_community_template_value()
 
         self.template_value['transient_student'] = transient_student
         self.template_value['navbar'] = {'faq': True}
@@ -678,6 +701,9 @@ class TeamHandler(BaseHandler):
                 self.template_value['progress_value'] = total_progress.get('progress_score', 0)
                 self.template_value['complete_value'] = total_progress.get('completed_score', 0)
                 self.template_value['percentage'] = total_progress.get('percentage', '')
+
+        # Set template value for Google Community ID
+        self.set_google_community_template_value()
 
         self.template_value['transient_student'] = transient_student
         self.template_value['navbar'] = {'team': True}
@@ -738,6 +764,9 @@ class StudentProfileHandler(BaseHandler):
         self.template_value['complete_value'] = completed_score
         self.template_value['percentage'] = total_progress.get('percentage', '')
         # CGL-MOOC-Builder ends
+
+        # CGL-MOOC-Builder: Set template value for Google Community ID
+        self.set_google_community_template_value()
 
         self.render('student_profile.html')
 
