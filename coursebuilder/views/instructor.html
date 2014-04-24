@@ -13,7 +13,7 @@
   <div class="box">
     <div class="antiscroll-inner">
       <div class="box-inner">
-        <div class="instructor"> <img src="assets/img/{{ instructor_image }}" class="instructors-pic" title="{{ instructor_image_alt }}" alt="{{ instructor_image_alt}}" role="presentation" />
+        <div class="instructor"> <img src="{% if instructor_image[0:4] == 'http' %}{{ instructor_image }}{% else %}assets/img/{{ instructor_image }}{% endif %}" class="instructors-pic" title="{{ instructor_image_alt }}" alt="{{ instructor_image_alt}}" role="presentation" />
           <div id="summaryinstructor">
             <p class="summary-text"><span class="importance">Instructor</span></p>
             <p class="summary-text">{{ instructor_details | safe }}</p>

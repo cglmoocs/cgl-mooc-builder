@@ -396,7 +396,7 @@ class BaseHandler(ApplicationHandler):
         self.response.out.write(template.render(self.template_value))
 
     def set_google_community_template_value(self):
-        """CGL-MOOC-Builder: Set template value of Google Community ID"""
+        """CGL-MOOC-Builder: Set template value for Google Community ID"""
         course = self.app_context.get_environ()['course']
         if 'google_community_id' in course:
             self.template_value['google_community_id'] = course['google_community_id']
@@ -404,6 +404,7 @@ class BaseHandler(ApplicationHandler):
             self.template_value['google_communit_id'] = ''
 
     def set_instructor_image_and_alt(self):
+        """CGL-MOOC-Builder: Set template value for instructor image and alt text"""
         course = self.app_context.get_environ()['course']
         if 'instructor_image' in course:
             if 'url' in course['instructor_image']:
@@ -414,6 +415,9 @@ class BaseHandler(ApplicationHandler):
                 self.template_value['instructor_image_alt'] = course['instructor_image']['alt_text']
             else:
                 self.template_value['instructor_image_alt'] = ''
+        else:
+            self.template_value['instructor_image'] = ''
+            self.template_value['instructor_image_alt'] = ''
 
 class BaseRESTHandler(BaseHandler):
     """Base REST handler."""
