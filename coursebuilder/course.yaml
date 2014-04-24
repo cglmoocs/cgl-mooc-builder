@@ -49,6 +49,9 @@ course:
   main_image:
     url: /assets/img/banner1.png
     alt_text: Photo of
+  instructor_image:
+    url: ''
+    alt_text: ''
 
   # Course start date.
   start_date: 'July 10, 2012'

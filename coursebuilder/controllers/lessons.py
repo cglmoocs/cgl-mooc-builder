@@ -210,6 +210,9 @@ class CourseHandler(BaseHandler):
         else: 
             self.template_value['main_video'] = ''
 
+        # CGL-MOOC-Builder: Set template value for instructor image and alt text.
+        self.set_instructor_image_and_alt()
+
         # CGL-MOOC-Builder: Set template value for Google Community ID
         self.set_google_community_template_value()
 
@@ -320,6 +323,9 @@ class HomeHandler(BaseHandler):
             self.template_value['main_video'] = course['main_video']['url']
         else: 
             self.template_value['main_video'] = ''
+
+        # CGL-MOOC-Builder: Set template value for instructor image and alt text.
+        self.set_instructor_image_and_alt()
 
         # CGL-MOOC-Builder: Set template value for Google Community ID
         self.set_google_community_template_value()

@@ -265,16 +265,16 @@ def create_course_registry():
             description='A space-separated list of email addresses of course '
             'administrators. Each email address must be placed between \'[\' '
             'and \']\'.'))
-    course_opts.add_property(
-        SchemaField(
-            'course:forum_email', 'Forum Email', 'string', optional=True,
-            description='Email for the forum, e.g. '
-            '\'My-Course@googlegroups.com\'.'))
-    course_opts.add_property(SchemaField(
-        'course:announcement_list_email', 'Announcement List Email', 'string',
-        optional=True, description='Email for the mailing list where students '
-        'can register to receive course announcements, e.g. '
-        '\'My-Course-Announce@googlegroups.com\''))
+    #course_opts.add_property(
+    #    SchemaField(
+    #        'course:forum_email', 'Forum Email', 'string', optional=True,
+    #        description='Email for the forum, e.g. '
+    #        '\'My-Course@googlegroups.com\'.'))
+    #course_opts.add_property(SchemaField(
+    #    'course:announcement_list_email', 'Announcement List Email', 'string',
+    #    optional=True, description='Email for the mailing list where students '
+    #    'can register to receive course announcements, e.g. '
+    #    '\'My-Course-Announce@googlegroups.com\''))
     course_opts.add_property(SchemaField('course:locale', 'Locale', 'string'))
     course_opts.add_property(SchemaField(
         'course:start_date', 'Course Start Date', 'string', optional=True))
@@ -328,6 +328,15 @@ def create_course_registry():
     homepage_opts.add_property(SchemaField(
         'course:instructor_details', 'Instructor Details', 'html',
         optional=True))
+
+    homepage_opts.add_property(SchemaField(
+        'course:instructor_image:url', 'Instructor Image', 'string', optional=True,
+        description='URL for the instructor image shown on the course homepage.'))
+    homepage_opts.add_property(SchemaField(
+        'course:instructor_image:alt_text', 'Instructor Image Alternate Text',
+        'string', optional=True,
+        description='Alt text for the instructor image on the course homepage.'))
+
     homepage_opts.add_property(SchemaField(
         'course:blurb', 'Course Abstract', 'html', optional=True,
         description='Text, shown on the course homepage, that explains what '
