@@ -1167,7 +1167,7 @@ class LessonRESTHandler(BaseRESTHandler):
             "video" : {"type": "string", "optional": true},
             "scored": {"type": "string"},
             "objectives" : {
-                "type": "string", "format": "html", "optional": true},
+                "type": "string", "format": "text", "optional": true},
             "notes" : {"type": "url", "optional": true},
             "activity_title" : {"type": "string", "optional": true},
             "activity_listed" : {"type": "boolean", "optional": true},
