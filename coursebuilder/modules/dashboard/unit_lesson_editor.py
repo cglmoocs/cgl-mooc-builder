@@ -1164,7 +1164,7 @@ class LessonRESTHandler(BaseRESTHandler):
             "key" : {"type": "string"},
             "title" : {"type": "string"},
             "unit_id": {"type": "string"},
-            "video" : {"type": "string", "optional": true},
+            "video" : {"type": "string", "optional": false},
             "scored": {"type": "string"},
             "objectives" : {
                 "type": "string", "format": "text", "optional": true},
