@@ -123,7 +123,7 @@ DEFAULT_EXISTING_COURSE_YAML_DICT = deep_dict_merge(
 EMPTY_COURSE_YAML = u"""# my new course.yaml
 course:
   title: 'New Course by %s'
-  now_available: False
+  now_available: True
 """
 
 # Here are the default assessment weights corresponding to the sample course.
@@ -300,6 +300,11 @@ def create_course_registry():
         optional=True, description='Provide your Google Community ID. '
         'Google Community can be accessed by clicking on the '
         '\'Join Discussion\' button on the home page.'))
+    course_opts.add_property(SchemaField(
+        'course:google_app_email', 'Email address for sending enrollment and '
+        'announcement email', 'string',
+        optional=False, description='Provide your Google App email for sending '
+        'enrollment and announcement email'))
 
     # Unit level settings.
     unit_opts = reg.add_sub_registry('unit', 'Unit and Lesson Settings')
@@ -427,7 +432,7 @@ class Unit12(object):
         self.type = ''
         self.title = ''
         self.release_date = ''
-        self.now_available = False
+        self.now_available = True
         # CGL-MOOC-Builder starts: additional data fields for a unit
         self.coding = ''
         self.resources = ''
@@ -672,7 +677,7 @@ class Unit13(object):
         self.type = ''
         self.title = ''
         self.release_date = ''
-        self.now_available = False
+        self.now_available = True
 
         # CGL-MOOC-Builder starts: additional data fields for a unit
         self.coding = ''
@@ -737,7 +742,7 @@ class Lesson13(object):
         self.video = ''
         self.notes = ''
         self.duration = ''
-        self.now_available = False
+        self.now_available = True
         self.has_activity = False
         self.activity_title = ''
         self.activity_listed = True
@@ -1193,7 +1198,7 @@ class CourseModel13(object):
         unit.type = unit_type
         unit.unit_id = self._get_next_id()
         unit.title = title
-        unit.now_available = False
+        unit.now_available = True
         unit.section_id = self._get_next_section_id()
 
         self._units.append(unit)
@@ -1210,7 +1215,7 @@ class CourseModel13(object):
         unit.type = unit_type
         unit.unit_id = self._get_next_id()
         unit.title = title
-        unit.now_available = False
+        unit.now_available = True
         unit.section_id = 1
 
         self._units.append(unit)
@@ -2353,7 +2358,7 @@ class Course(object):
 course:
   title: '%s'
   admin_user_emails: '[%s]'
-  now_available: False
+  now_available: True
 """ % (title, admin_email)
 
         fs.put(course_yaml, vfs.string_to_stream(course_yaml_text))

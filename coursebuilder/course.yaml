@@ -111,6 +111,10 @@ course:
   # CGL-MOOC-Builder: Google Community ID
   google_community_id: ''
 
+  # CGL-MOOC-Builder: Gmail of Google App owner
+  # This email will be used to send enrollment and announcemnt notification.
+  google_app_gmail: ''
+
 ########################
 # Course preview page
 ########################
