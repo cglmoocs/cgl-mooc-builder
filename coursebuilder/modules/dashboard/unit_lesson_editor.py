@@ -532,7 +532,6 @@ class UnitRESTHandler(CommonUnitRESTHandler):
             "overview": {"type":"string", "format":"text", "optional": true},
             "total_time": {"type":"string", "optional": true},
             "playlist": {"type":"string", "optional": true},
-            "google_community": {"type":"string", "optional": true},
             "section_id": {"type":"string"}
             }
     }
@@ -593,7 +592,6 @@ class UnitRESTHandler(CommonUnitRESTHandler):
             (['properties', 'overview', '_inputex'], {'label': 'Overview'}),
             (['properties', 'total_time', '_inputex'], {'label': 'Total Time'}),
             (['properties', 'playlist', '_inputex'], {'label': 'YouTube Playlist ID'}),
-            (['properties', 'google_community', '_inputex'], {'label': 'Google Community ID'}),
             (['properties', 'section_id', '_inputex'], {
                 'label': 'Section ID', '_type': 'select', 'choices': section_list}),
             #(['properties', 'section_title', '_inputex'], {'label': 'Section Title'}),
@@ -624,7 +622,6 @@ class UnitRESTHandler(CommonUnitRESTHandler):
             'overview': unit.overview,
             'total_time': unit.total_time,
             'playlist': unit.playlist,
-            'google_community': unit.google_community,
             'section_id': unit.section_id}
             #'section_title': unit.section_title,
             #'section_img': unit.section_img,
@@ -642,7 +639,6 @@ class UnitRESTHandler(CommonUnitRESTHandler):
         unit.overview = updated_unit_dict.get('overview')
         unit.total_time = updated_unit_dict.get('total_time')
         unit.playlist = updated_unit_dict.get('playlist')
-        unit.google_community = updated_unit_dict.get('google_community')
 
         unit.section_id = updated_unit_dict.get('section_id')
         #unit.section_overview = updated_unit_dict.get('section_overview')
