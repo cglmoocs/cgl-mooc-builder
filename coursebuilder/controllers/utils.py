@@ -556,9 +556,22 @@ class RegisterHandler(BaseHandler):
         Student.add_new_student_for_current_user(
             name, transforms.dumps(self.request.POST.items()))
 
+        # CGL-MOOC-Builder: Get user's Google App email and
+        # course title from course setting page
+        course = self.app_context.get_environ()['course']
+        if 'google_app_email' in course:
+            sender_email = course['google_app_email']
+        else:
+            sender_email = ''
+
+        if 'title' in course:
+            course_title = course['title']
+        else:
+            course_title = ''
+
         # CGL-MOOC-Builder starts:
         # Send an notification email after registration
-        sender_address = "X-Informatics <cglmoocs@gmail.com>"
+        sender_address = course_title + " <"+sender_email+">"
         user_address = name + " <" + user.email() + ">"
         subject = "Welcome to the CGL-MOOC-Builder Online Course"
         body = "Dear " + name + ", Example HTML content"

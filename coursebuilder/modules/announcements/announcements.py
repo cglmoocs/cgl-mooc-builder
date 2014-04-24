@@ -347,6 +347,20 @@ class AnnouncementsItemRESTHandler(BaseRESTHandler):
         #    message = 'Saved.'
         # Google Course Builder ends
 
+
+        # CGL-MOOC-Builder: Get user's Google App email and
+        # course title from course setting page
+        course = self.app_context.get_environ()['course']
+        if 'google_app_email' in course:
+            sender_email = course['google_app_email']
+        else:
+            sender_email = ''
+
+        if 'title' in course:
+            course_title = course['title']
+        else:
+            course_title = ''
+
         # CGL-MOOC-Builder starts:
         # Send an email when an announcement was made
         if entity.send_email and not entity.is_draft:
@@ -359,7 +373,7 @@ class AnnouncementsItemRESTHandler(BaseRESTHandler):
                     recipient = s.name + "<" + s.email + ">"
                     email_list.append(recipient)
             # send an announcement email
-            sender_address = "CGL-MOOC-Builder <cglmoocs@gmail.com>"
+            sender_address = course_title + " <"+sender_email+">"
             user_address = email_list
             subject = "Announcement: " + entity.title
             body = ""
