@@ -604,15 +604,15 @@ class RegisterHandler(BaseHandler):
         if 'email_body' in course:
             email_body = course['email_body']
         else:
-            email_body = ''
+            email_body = "<div style='background-color: #999999; color: #ffffff; padding: 0px 20px 20px 20px; font-family: 'Verdana', sans-serif;'> <div style='width: 500px; margin: 0 auto;'> <p style='background-color: #093359; height: 100px; margin: 0px; padding: 0px;'> <img src='http://cloudmooc.pti.indiana.edu:8080/assets/img/Logo.png'></img> </p> <div style='background-color: #CCC; color: black; padding: 15px;'> <p>Welcome " + name + ",</p> <p>Thank you for enrolling in this.</p> </div> <p style='background-color: #012256; height: 50px; margin: 0px; padding: 0px;'></p></div></div>"
 
         # CGL-MOOC-Builder starts:
         # Send an notification email after registration
         sender_address = course_title + " <"+sender_email+">"
         user_address = name + " <" + user.email() + ">"
-        subject = "Welcome to the CGL-MOOC-Builder Online Course"
-        body = "Dear " + name + ", Example HTML content"
-        html = "<div style='background-color: #999999; color: #ffffff; padding: 0px 20px 20px 20px; font-family: 'Verdana', sans-serif;'> <div style='width: 500px; margin: 0 auto;'> <p style='background-color: #093359; height: 100px; margin: 0px; padding: 0px;'> <img src='http://cloudmooc.pti.indiana.edu:8080/assets/img/Logo.png'></img> </p> <div style='background-color: #CCC; color: black; padding: 15px;'> <p>Welcome " + name + ",</p> <p>Thank you for enrolling in this.</p> </div> <p style='background-color: #012256; height: 50px; margin: 0px; padding: 0px;'></p></div></div>"
+        subject = "Welcome "+name+" to "+course_title
+        body = ""
+        html = email_body
         mail.send_mail(sender_address, user_address, subject, body, html=html)
         # CGL-MOOC-Builder ends
 
