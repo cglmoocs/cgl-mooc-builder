@@ -307,11 +307,11 @@ def create_course_registry():
         'enrollment and announcement email'))
 
     # Unit level settings.
-    unit_opts = reg.add_sub_registry('unit', 'Unit and Lesson Settings')
-    unit_opts.add_property(SchemaField(
-        'unit:hide_lesson_navigation_buttons', 'Hide Lesson Navigation Buttons',
-        'boolean', description='Whether to hide the \'Previous Page\' and '
-        ' \'Next Page\' buttons below lesson and activity pages'))
+    #unit_opts = reg.add_sub_registry('unit', 'Unit and Lesson Settings')
+    #unit_opts.add_property(SchemaField(
+    #    'unit:hide_lesson_navigation_buttons', 'Hide Lesson Navigation Buttons',
+    #    'boolean', description='Whether to hide the \'Previous Page\' and '
+    #    ' \'Next Page\' buttons below lesson and activity pages'))
 
     # Course registration settings.
     reg_opts = reg.add_sub_registry('reg_form', 'Student Registration Options')
@@ -337,26 +337,26 @@ def create_course_registry():
         'string', optional=True,
         description='Alt text for the instructor image on the course homepage.'))
 
-    homepage_opts.add_property(SchemaField(
-        'course:blurb', 'Course Abstract', 'html', optional=True,
-        description='Text, shown on the course homepage, that explains what '
-        'the course is about.',
-        extra_schema_dict_values={
-            'supportCustomTags': common.tags.CAN_USE_DYNAMIC_TAGS.value,
-            'excludedCustomTags':
-            common.tags.EditorBlacklists.COURSE_SCOPE}))
+    #homepage_opts.add_property(SchemaField(
+    #    'course:blurb', 'Course Abstract', 'html', optional=True,
+    #    description='Text, shown on the course homepage, that explains what '
+    #    'the course is about.',
+    #    extra_schema_dict_values={
+    #        'supportCustomTags': common.tags.CAN_USE_DYNAMIC_TAGS.value,
+    #        'excludedCustomTags':
+    #        common.tags.EditorBlacklists.COURSE_SCOPE}))
     homepage_opts.add_property(SchemaField(
         'course:main_video:url', 'Course Video', 'string', optional=True,
         description='YouTube ID for the preview video shown on the course homepage '
         '(e.g. Kdg2drcUjYI in https://www.youtube.com/embed/Kdg2drcUjYI ).'))
-    homepage_opts.add_property(SchemaField(
-        'course:main_image:url', 'Course Image', 'string', optional=True,
-        description='URL for the preview image shown on the course homepage. '
-        'This will only be shown if no course video is specified.'))
-    homepage_opts.add_property(SchemaField(
-        'course:main_image:alt_text', 'Alternate Text', 'string',
-        optional=True,
-        description='Alt text for the preview image on the course homepage.'))
+    #homepage_opts.add_property(SchemaField(
+    #    'course:main_image:url', 'Course Image', 'string', optional=True,
+    #    description='URL for the preview image shown on the course homepage. '
+    #    'This will only be shown if no course video is specified.'))
+    #homepage_opts.add_property(SchemaField(
+    #    'course:main_image:alt_text', 'Alternate Text', 'string',
+    #    optional=True,
+    #    description='Alt text for the preview image on the course homepage.'))
     return reg
 
 
