@@ -29,7 +29,7 @@ course:
   admin_user_emails: ''
 
   # Course title
-  title: 'Big Data MOOC from CGL MOOC Builder'
+  title: 'DEMO COURSE: Big Data MOOC'
 
   # Main page blurb. (The '|' at the beginning enables multi-line input.)
   blurb: |
@@ -38,7 +38,7 @@ course:
     information when the stakes are high.
 
   # Information about the instructor to display on the main page.
-  instructor_details: 'Daniel Russell <br> Senior Research Scientist <br> Google, Inc.'
+  instructor_details: 'Prof. Geoffrey Fox <br> School of Informatics and Computing'
 
   # You can choose whether you want a video or an image on the main page.
   # If you specify both a video and an image link, then the video will take
@@ -50,7 +50,7 @@ course:
     url: /assets/img/banner1.png
     alt_text: Photo of
   instructor_image:
-    url: ''
+    url: 'Geoffrey.jpg'
     alt_text: ''
 
   # Course start date.
@@ -84,6 +84,10 @@ course:
   # Whether the course material can be accessed without requiring users to log
   # in or register.
   browsable: False
+
+  # CGL-MOOC-Builder:
+  # Body of a welcome Email when a user enrolls
+  email_body: ''
 
   # Google Analytics tag: Fill this in with a value obtained by signing up
   # at http://www.google.com/analytics.  Note that you may wish instead to

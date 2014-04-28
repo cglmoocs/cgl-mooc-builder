@@ -305,6 +305,11 @@ def create_course_registry():
         'announcement email', 'string',
         optional=False, description='Provide your Google App email for sending '
         'enrollment and announcement email'))
+    course_opts.add_property(SchemaField(
+        'course:email_body', 'Email body of the welcome email', 'text',
+        optional=True, description='Email body for the welcome email. It should '
+        'be an HTML template with inline CSS and the images should be absolute '
+        'URLs. This email will be sent to a student when he/she first enroll.'))
 
     # Unit level settings.
     #unit_opts = reg.add_sub_registry('unit', 'Unit and Lesson Settings')

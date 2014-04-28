@@ -589,7 +589,7 @@ class RegisterHandler(BaseHandler):
             name, transforms.dumps(self.request.POST.items()))
 
         # CGL-MOOC-Builder: Get user's Google App email and
-        # course title from course setting page
+        # course title, email body from course setting page.
         course = self.app_context.get_environ()['course']
         if 'google_app_email' in course:
             sender_email = course['google_app_email']
@@ -600,6 +600,11 @@ class RegisterHandler(BaseHandler):
             course_title = course['title']
         else:
             course_title = ''
+
+        if 'email_body' in course:
+            email_body = course['email_body']
+        else:
+            email_body = ''
 
         # CGL-MOOC-Builder starts:
         # Send an notification email after registration
