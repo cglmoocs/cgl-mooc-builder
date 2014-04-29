@@ -264,7 +264,7 @@ def create_course_registry():
             'course:admin_user_emails', 'Course Admin Emails', 'string',
             description='A space-separated list of email addresses of course '
             'administrators. Each email address must be placed between \'[\' '
-            'and \']\'.'))
+            'and \']\'. YOU MUST PROVIDE A VALID GMAIL ACCOUNT!'))
     #course_opts.add_property(
     #    SchemaField(
     #        'course:forum_email', 'Forum Email', 'string', optional=True,
