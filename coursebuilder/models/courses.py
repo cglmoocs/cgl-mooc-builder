@@ -302,9 +302,9 @@ def create_course_registry():
         '\'Join Discussion\' button on the home page.'))
     course_opts.add_property(SchemaField(
         'course:google_app_email', 'Email address for sending enrollment and '
-        'announcement email', 'string',
+        'announcement email.', 'string',
         optional=False, description='Provide your Google App email for sending '
-        'enrollment and announcement email'))
+        'enrollment and announcement email. IT MUST BE A VALID GMAIL ACCOUNT!'))
     course_opts.add_property(SchemaField(
         'course:email_body', 'Email body of the welcome email', 'text',
         optional=True, description='Email body for the welcome email. It should '

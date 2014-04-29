@@ -241,7 +241,8 @@ class CoursesItemRESTHandler(BaseRESTHandler):
         (['properties', 'name', '_inputex'], {'label': 'Unique Name'}),
         (['properties', 'title', '_inputex'], {'label': 'Course Title'}),
         (['properties', 'admin_email', '_inputex'], {
-            'label': 'Course Admin Email'})]
+            'label': 'Course Admin Email',
+            'description': 'IT MUST BE A VALID GMAIL ACCOUNT!'})]
 
     def get(self):
         """Handles HTTP GET verb."""
