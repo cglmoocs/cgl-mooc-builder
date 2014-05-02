@@ -611,7 +611,7 @@ class RegisterHandler(BaseHandler):
         sender_address = course_title + " <"+sender_email+">"
         user_address = name + " <" + user.email() + ">"
         subject = "Welcome "+name+" to "+course_title
-        body = ""
+        body = "Welcome!"
         html = email_body
         mail.send_mail(sender_address, user_address, subject, body, html=html)
         # CGL-MOOC-Builder ends
